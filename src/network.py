@@ -16,7 +16,7 @@ class NeuralNetwork:
         for idx in range(0, num_hidden): # Connect all layers
             self._layers[idx].connect_next(self._layers[idx+1])
 
-    def train(self, train_data, train_labels, num_epochs):
+    def train(self, train_data, train_labels, num_epochs, quiet=True):
         """Train the neural network on the given training data set"""
         pass
 
@@ -46,3 +46,14 @@ class NeuralNetwork:
 
     def cost(self, outputs):
         return self._cost_function(outputs)
+
+    def back_prop(self, cost_grad):
+        """Back propagate through the layers of the network, retrieving the gradient of the cost function with
+        respect to all the weights"""
+        weight_grads = []
+        gradient_in = np.ones(len(self._layers[-1]._neurons)) * cost_grad
+        for layer in reversed(self._layers):
+            grad_inputs, grad_weights = layer.back_propagate(gradient_in)
+            weight_grads.append(grad_weights)
+            gradient_in = grad_weights
+        return weight_grads
