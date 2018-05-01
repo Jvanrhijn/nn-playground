@@ -8,6 +8,7 @@ class NeuralNetwork:
         self._cost_function = cost_function
         self._layers = [Layer(activator=activator).init_random(neurons_per_layer, input_size)
                         for _ in range(num_layers)]
+        self._layers[0].init_random(neurons_per_layer, input_size)
         self._input_size = input_size
         for idx in range(0, num_layers-1):
             self._layers[idx].connect_next(self._layers[idx+1])
