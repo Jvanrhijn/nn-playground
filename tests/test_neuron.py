@@ -42,3 +42,16 @@ class TestLayer(unittest.TestCase):
         expect_out = np.array([0, 15, 24])
         np.testing.assert_array_almost_equal(output, expect_out)
 
+    def test_backprop(self):
+        neuron_a = nr.Neuron(act.re_lu, 3)
+        neuron_b = nr.Neuron(act.re_lu, 3)
+        neuron_c = nr.Neuron(act.re_lu, 3)
+        layer = ly.Layer(neuron_a, neuron_b, neuron_c)
+        for neuron in layer._neurons:
+            neuron.weights = np.random.rand(3)
+        gradients_in = np.ones(3)
+        inputs = np.array([[1, 2, -10], [4, 5, 6], [7, 8, 9]])
+        layer.forward_pass(inputs)
+        grads_inp, grads_weights = layer.back_propagate(gradients_in)
+        self.assertEqual(grads_inp.shape, (3, 3))
+        self.assertEqual(grads_weights.shape, (3, 3))
