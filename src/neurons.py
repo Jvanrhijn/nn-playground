@@ -25,6 +25,7 @@ class Neuron:
 
     def init_random(self):
         self._weights = np.random.rand(len(self._weights))
+        return self
 
     def activate(self, inp):
         self._inputs = inp

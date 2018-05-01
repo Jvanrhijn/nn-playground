@@ -15,7 +15,7 @@ class Layer:
         self._next_layer = None
 
     def init_random(self, num_neurons, weights_per_neuron):
-        self._neurons = [Neuron(self._activator, weights_per_neuron) for _ in range(num_neurons)]
+        self._neurons = [Neuron(self._activator, weights_per_neuron).init_random() for _ in range(num_neurons)]
         self._weights = np.array([neuron.weights for neuron in self._neurons])
         return self
 
@@ -23,7 +23,7 @@ class Layer:
         """Pass inputs through the network"""
         outputs = np.zeros(len(self._neurons))
         for idx, neuron in enumerate(self._neurons):
-            outputs[idx] = neuron.activate(inputs[idx])
+            outputs[idx] = neuron.activate(inputs)
         return outputs
 
     def back_propagate(self, gradients_in):
@@ -41,3 +41,14 @@ class Layer:
     @property
     def next_layer(self):
         return self._next_layer
+
+    @property
+    def weights(self):
+        return self._weights
+
+    @weights.setter
+    def weights(self, new_weights):
+        assert new_weights.shape == self._weights.shape
+        for idx, neuron in enumerate(self._neurons):
+            neuron.weights = new_weights[idx, :]
+        self._weights = new_weights
