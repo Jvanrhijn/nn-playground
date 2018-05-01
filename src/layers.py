@@ -17,6 +17,7 @@ class Layer:
     def init_random(self, num_neurons, weights_per_neuron):
         self._neurons = [Neuron(self._activator, weights_per_neuron) for _ in range(num_neurons)]
         self._weights = np.array([neuron.weights for neuron in self._neurons])
+        return self
 
     def forward_pass(self, inputs):
         """Pass inputs through the network"""
@@ -36,3 +37,7 @@ class Layer:
 
     def connect_next(self, next_layer):
         self._next_layer = next_layer
+
+    @property
+    def next_layer(self):
+        return self._next_layer

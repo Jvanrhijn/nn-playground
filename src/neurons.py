@@ -23,8 +23,8 @@ class Neuron:
         assert new_weights.shape == self._weights.shape
         self._weights = new_weights
 
-    def init_weights(self):
-        pass
+    def init_random(self):
+        self._weights = np.random.rand(len(self._weights))
 
     def activate(self, inp):
         self._inputs = inp

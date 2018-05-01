@@ -3,6 +3,7 @@ import numpy as np
 import src.neurons as nr
 import src.activators as act
 import src.layers as ly
+import src.network as nt
 
 
 class TestNeuron(unittest.TestCase):
@@ -48,10 +49,16 @@ class TestLayer(unittest.TestCase):
         neuron_c = nr.Neuron(act.re_lu, 3)
         layer = ly.Layer(neuron_a, neuron_b, neuron_c)
         for neuron in layer._neurons:
-            neuron.weights = np.random.rand(3)
+            neuron.init_random()
         gradients_in = np.ones(3)
         inputs = np.array([[1, 2, -10], [4, 5, 6], [7, 8, 9]])
         layer.forward_pass(inputs)
         grads_inp, grads_weights = layer.back_propagate(gradients_in)
         self.assertEqual(grads_inp.shape, (3, 3))
         self.assertEqual(grads_weights.shape, (3, 3))
+
+
+class TestNetwork(unittest.TestCase):
+
+    def test_forward_pass(self):
+        network = nt.NeuralNetwork(3, 2, 3, act.re_lu, None)
