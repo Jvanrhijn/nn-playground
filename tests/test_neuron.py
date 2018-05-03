@@ -5,7 +5,7 @@ import src.layers as ly
 
 class TestLayer(unittest.TestCase):
 
-    def test_forward(self):
+    def test_relu_forward(self):
         inp = np.array([1, 2, 3])
         weights = np.array([[1, 2, 3], [3, 4, 5]])
         biases = np.array([5, -30])
@@ -21,3 +21,5 @@ class TestLayer(unittest.TestCase):
         np.testing.assert_array_almost_equal(layer.grad_weights, grad_weights)
         np.testing.assert_array_almost_equal(layer.grad_biases, grad_biases)
 
+    def test_relu_backprop(self):
+        pass

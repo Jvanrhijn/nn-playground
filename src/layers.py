@@ -9,6 +9,7 @@ class Layer:
         self._grad_inputs = 0
         self._grad_weights = 0
         self._grad_biases = 0
+        self._next_layer = None
 
     def forward_pass(self, inputs):
         """Pass inputs through the network"""
