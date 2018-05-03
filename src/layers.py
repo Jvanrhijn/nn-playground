@@ -12,8 +12,8 @@ class Layer:
         self._grad_weights = 0
         self._grad_biases = 0
         # Gradients of weights and biases
-        self._weight_grad = 0
-        self._biases_grad = 0
+        self._weight_grad = np.zeros(self._weights.shape)
+        self._biases_grad = np.zeros(self._biases.shape)
         self._next_layer = None
 
     def forward_pass(self, inputs):
@@ -23,13 +23,13 @@ class Layer:
     def connect_next(self, next_layer):
         pass
 
-    def back_propagate(self, gradients_in):
+    def back_propagate(self, gradient_in):
         """Propagate gradients backward through the layer and save weight/bias gradients
         :param gradients_in: vector of gradients (dLoss/dy) heading into each neuron
         :return grad_inputs: vector of gradients heading out of each neuron (dLoss/dx = dLoss/dy * dy/dx)"""
-        self._weight_grad = gradients_in[:, np.newaxis] * self._grad_inputs  # dLoss/dw = dLoss/dy * dy/dw
-        self._biases_grad = gradients_in[:, np.newaxis] * self._grad_biases  # dLoss/db = dLoss/dy * dy/db
-        grad_inputs = gradients_in[:, np.newaxis] * self._grad_weights
+        grad_inputs = self._grad_inputs.T.dot(gradient_in)
+        self._weight_grad = gradient_in[:, np.newaxis] * self._grad_weights
+        self._biases_grad = self._grad_biases.T.dot(gradient_in)
         return grad_inputs
 
     @property
@@ -85,10 +85,10 @@ class ReLuLayer(Layer):
         outputs = np.maximum(0, np.dot(self._weights, inputs) + self._biases)
         self._grad_inputs = self._weights
         self._grad_inputs[outputs == 0] = 0
-        self._grad_weights = inputs[np.newaxis, :] * np.ones(self._weights.shape)
+        self._grad_weights = inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape)
         self._grad_weights[outputs == 0] = 0
-        self._grad_biases = np.ones(self._grad_weights.shape)
-        self._grad_biases[outputs == 0] = 0
+        self._grad_biases = np.ones(self.num_neurons)
+        self._grad_weights[outputs == 0] = 0
         return outputs
 
 
@@ -98,5 +98,5 @@ class LinearLayer(Layer):
         outputs = np.dot(self._weights, inputs) + self._biases
         self._grad_inputs = self._weights
         self._grad_weights = inputs[np.newaxis, :] * np.ones(self._weights.shape)
-        self._grad_biases = np.ones(self._grad_weights.shape)
+        self._grad_biases = np.ones(self.num_neurons)
         return outputs

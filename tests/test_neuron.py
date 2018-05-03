@@ -1,62 +1,65 @@
 import unittest
 import numpy as np
+import matplotlib.pyplot as plt
 import src.layers as ly
 import src.network as net
+import src.optim as opt
+import src.models as mod
 
 
-class TestLayer(unittest.TestCase):
+class Test(unittest.TestCase):
 
-    def test_relu_forward(self):
-        inp = np.array([1, 2, 3])
-        weights = np.array([[1, 2, 3], [3, 4, 5]])
-        biases = np.array([5, -30])
-        expect_out = np.array([19, 0])
-        layer = ly.ReLuLayer(2, 2)
-        layer.weights = weights
-        layer.biases = biases
-        grad_inputs = np.array([[1, 2, 3], [0, 0, 0]])
-        grad_weights = np.array([[1, 2, 3], [0, 0, 0]])
-        grad_biases = np.array([[1, 1, 1], [0, 0, 0]])
-        np.testing.assert_array_almost_equal(layer.forward_pass(inp), expect_out)
-        np.testing.assert_array_almost_equal(layer.grad_inputs, grad_inputs)
-        np.testing.assert_array_almost_equal(layer.grad_weights, grad_weights)
-        np.testing.assert_array_almost_equal(layer.grad_biases, grad_biases)
-
-    def test_relu_backprop(self):
-        inp = np.array([1, 2, 3])
-        weights = np.array([[1, 2, 3], [3, 4, 5]])
-        biases = np.array([5, -30])
-        expect_out = np.array([19, 0])
-        correct_out = np.array([10, 1])
-
-        grad_loss = -0.5*(correct_out - expect_out)
-
-        layer = ly.ReLuLayer(2, 2)
-        layer.weights = weights
-        layer.biases = biases
-
-        weight_grads = np.array([[4.5, 9.0, 13.5], [0, 0, 0]])
-        input_grads = np.array([[4.5, 9.0, 13.5], [0, 0, 0]])
-        bias_grads = np.array([[4.5, 4.5, 4.5], [0, 0, 0]])
-
+    def test_layer(self):
+        layer = ly.ReLuLayer(10, 5)
+        inp = np.random.random(5)
         layer.forward_pass(inp)
-        np.testing.assert_array_almost_equal(layer.back_propagate(grad_loss), input_grads)
-        np.testing.assert_array_almost_equal(layer.weight_grad, weight_grads)
-        np.testing.assert_array_almost_equal(layer.biases_grad, bias_grads)
+        grad_in = np.random.random(10)
+        layer.back_propagate(grad_in)
+
+        network = net.NeuralNetwork(5, 3, 1, 10, ly.ReLuLayer, mod.mse)
+        output = network.forward_pass(inp)
+        correct_output = np.array([1, 2, 3])
+        cost, cost_grad = network.cost(output, correct_output)
+        network.back_prop(cost_grad)
+
+    def test_train_net(self):
+        network = net.NeuralNetwork(2, 2, 1, 10, ly.ReLuLayer, mod.mse)
+
+        train_data = np.random.random(size=(100, 2))
+        train_outputs = np.zeros(train_data.shape[0])
+        for idx in range(len(train_outputs)):
+            if train_data[idx, 0] > train_data[idx, 1]:
+                train_outputs[idx] = 0
+            else:
+                train_outputs[idx] = 1
+        output = np.zeros(train_data.shape)
+        for idx, example in enumerate(train_data):
+            output[idx, :] = network.forward_pass(example)
+        correct = 0
+        for idx, entry in enumerate(output):
+            if entry.argmax() == train_outputs[idx]:
+                correct += 1
+        start_acc = correct / train_data.shape[0]
+
+        nesterov = opt.NAGOptimizer(0.01, 0.9, network)
+        costs = network.train(train_data, train_outputs, 1000, nesterov,
+                              quiet=False, save=True)
+
+        outputs = np.zeros(train_data.shape)
+        output = np.zeros(train_data.shape)
+        for idx, example in enumerate(train_data):
+            output[idx, :] = network.forward_pass(example)
+        correct = 0
+        for idx, entry in enumerate(output):
+            if entry.argmax() == train_outputs[idx]:
+                correct += 1
+        acc = correct / train_data.shape[0]
+        print("Start accuracy: {}".format(start_acc))
+        print("Final accuracy: {}".format(acc))
+
+        fig, ax = plt.subplots(1)
+        ax.plot(costs)
+        ax.set_xlabel("Epoch"), ax.set_ylabel("Objective function")
+        plt.show()
 
 
-class TestNetwork(unittest.TestCase):
-
-    def test_forward(self):
-        network = net.NeuralNetwork(3, 2, 1, 2, ly.ReLuLayer, None)
-        inp = np.array([1, 2, 3])
-        weights = [np.array([[1, 2, 3], [3, 4, 5]]), np.array([[1, 1], [1, 1]])]
-        biases = [np.array([5, -30]), np.array([0, 0])]
-
-        expect_out = np.array([19, 19])
-
-        network.set_weights(weights)
-        network.set_biases(biases)
-        out = network.forward_pass(inp)
-
-        np.testing.assert_array_almost_equal(out, expect_out)
