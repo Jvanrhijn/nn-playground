@@ -22,4 +22,23 @@ class TestLayer(unittest.TestCase):
         np.testing.assert_array_almost_equal(layer.grad_biases, grad_biases)
 
     def test_relu_backprop(self):
-        pass
+        inp = np.array([1, 2, 3])
+        weights = np.array([[1, 2, 3], [3, 4, 5]])
+        biases = np.array([5, -30])
+        expect_out = np.array([19, 0])
+        correct_out = np.array([10, 1])
+
+        grad_loss = -0.5*(correct_out - expect_out)
+
+        layer = ly.ReLuLayer(2, 2)
+        layer.weights = weights
+        layer.biases = biases
+
+        weight_grads = np.array([[4.5, 9.0, 13.5], [0, 0, 0]])
+        input_grads = np.array([[4.5, 9.0, 13.5], [0, 0, 0]])
+        bias_grads = np.array([[4.5, 4.5, 4.5], [0, 0, 0]])
+
+        layer.forward_pass(inp)
+        np.testing.assert_array_almost_equal(layer.back_propagate(grad_loss), input_grads)
+        np.testing.assert_array_almost_equal(layer.weight_grad, weight_grads)
+        np.testing.assert_array_almost_equal(layer.biases_grad, bias_grads)
