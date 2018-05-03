@@ -24,7 +24,7 @@ class Neuron:
         self._weights = new_weights
 
     def init_random(self):
-        self._weights = np.random.rand(len(self._weights))
+        self._weights = np.random.randn(len(self._weights))*0.01
         return self
 
     def activate(self, inp):

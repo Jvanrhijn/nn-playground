@@ -13,6 +13,7 @@ class Layer:
         else:
             self._activator = activator
         self._next_layer = None
+        self.momentum = 0
 
     def init_random(self, num_neurons, weights_per_neuron):
         self._neurons = [Neuron(self._activator, weights_per_neuron).init_random() for _ in range(num_neurons)]
@@ -30,7 +31,7 @@ class Layer:
         """Back propagate gradients through the neurons in this layer"""
         gradients_inputs, gradients_weights = np.zeros(self._weights.shape), np.zeros(self._weights.shape)
         for idx, neuron in enumerate(self._neurons):
-            grad_inputs, grad_weights = neuron.back_prop(gradients_in[idx])
+            grad_inputs, grad_weights = neuron.back_prop(gradients_in.T[idx])
             gradients_inputs[idx, :] = grad_inputs
             gradients_weights[idx, :] = grad_weights
         return gradients_inputs, gradients_weights
