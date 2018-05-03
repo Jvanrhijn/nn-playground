@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import src.layers as ly
+import src.network as net
 
 
 class TestLayer(unittest.TestCase):
@@ -42,3 +43,20 @@ class TestLayer(unittest.TestCase):
         np.testing.assert_array_almost_equal(layer.back_propagate(grad_loss), input_grads)
         np.testing.assert_array_almost_equal(layer.weight_grad, weight_grads)
         np.testing.assert_array_almost_equal(layer.biases_grad, bias_grads)
+
+
+class TestNetwork(unittest.TestCase):
+
+    def test_forward(self):
+        network = net.NeuralNetwork(3, 2, 1, 2, ly.ReLuLayer, None)
+        inp = np.array([1, 2, 3])
+        weights = [np.array([[1, 2, 3], [3, 4, 5]]), np.array([[1, 1], [1, 1]])]
+        biases = [np.array([5, -30]), np.array([0, 0])]
+
+        expect_out = np.array([19, 19])
+
+        network.set_weights(weights)
+        network.set_biases(biases)
+        out = network.forward_pass(inp)
+
+        np.testing.assert_array_almost_equal(out, expect_out)

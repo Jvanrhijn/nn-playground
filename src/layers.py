@@ -4,6 +4,7 @@ import numpy as np
 class Layer:
     """Layer of a fully connected neural network"""
     def __init__(self, num_neurons, num_inputs):
+        self._num_neurons = num_neurons
         self._weights = np.random.randn(num_neurons, num_inputs)
         self._biases = np.random.randn(num_neurons)
         # Gradients of output with respect to input/weights/biases
@@ -19,11 +20,17 @@ class Layer:
         """Pass inputs through the network"""
         pass
 
-    def back_propagate(self, gradients_in):
-        pass
-
     def connect_next(self, next_layer):
         pass
+
+    def back_propagate(self, gradients_in):
+        """Propagate gradients backward through the layer and save weight/bias gradients
+        :param gradients_in: vector of gradients (dLoss/dy) heading into each neuron
+        :return grad_inputs: vector of gradients heading out of each neuron (dLoss/dx = dLoss/dy * dy/dx)"""
+        self._weight_grad = gradients_in[:, np.newaxis] * self._grad_inputs  # dLoss/dw = dLoss/dy * dy/dw
+        self._biases_grad = gradients_in[:, np.newaxis] * self._grad_biases  # dLoss/db = dLoss/dy * dy/db
+        grad_inputs = gradients_in[:, np.newaxis] * self._grad_weights
+        return grad_inputs
 
     @property
     def next_layer(self):
@@ -65,6 +72,10 @@ class Layer:
     def biases_grad(self):
         return self._biases_grad
 
+    @property
+    def num_neurons(self):
+        return self._num_neurons
+
 
 class ReLuLayer(Layer):
     """Layer with ReLu activated neurons"""
@@ -80,11 +91,12 @@ class ReLuLayer(Layer):
         self._grad_biases[outputs == 0] = 0
         return outputs
 
-    def back_propagate(self, gradients_in):
-        """Propagate gradients backward through the layer and save weight/bias gradients
-        :param gradients_in: vector of gradients (dLoss/dy) heading into each neuron
-        :return grad_inputs: vector of gradients heading out of each neuron (dLoss/dx = dLoss/dy * dy/dx)"""
-        self._weight_grad = gradients_in[:, np.newaxis] * self._grad_inputs  # dLoss/dw = dLoss/dy * dy/dw
-        self._biases_grad = gradients_in[:, np.newaxis] * self._grad_biases  # dLoss/db = dLoss/dy * dy/db
-        grad_inputs = gradients_in[:, np.newaxis] * self._grad_weights
-        return grad_inputs
+
+class LinearLayer(Layer):
+    """Linear classifier layer e.g. for output layer"""
+    def forward_pass(self, inputs):
+        outputs = np.dot(self._weights, inputs) + self._biases
+        self._grad_inputs = self._weights
+        self._grad_weights = inputs[np.newaxis, :] * np.ones(self._weights.shape)
+        self._grad_biases = np.ones(self._grad_weights.shape)
+        return outputs
