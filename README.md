@@ -1,2 +1,3 @@
 # nn-playground
-Neural network playground, for educational purposes
+
+Neural network implemented in Python + NumPy, mostly to teach myself about how these things work and to learn more about different convex optimization algorithms.
