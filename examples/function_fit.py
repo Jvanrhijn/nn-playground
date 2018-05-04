@@ -5,6 +5,7 @@ import src.network as net
 import src.layers as ly
 import src.optim as opt
 import src.models as mod
+from src.util import sigmoid
 
 np.random.seed(0)
 
@@ -104,5 +105,24 @@ nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, gauss_network)
 training_in = np.linspace(-1, 1, 20)
 
 demo(lambda x: gaussian_function(1, 0, .25, x), gauss_network, nag_optimizer, training_in, "gaussian function")
+
+
+"""Sigmoid function example"""
+num_hidden = 1
+neurons_per_hidden = 100
+input_size = 1
+output_size = 1
+learning_rate = 0.001
+mom_par = 0.8
+
+epochs = 2000
+
+sig_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.SigmoidLayer, mod.mse)
+
+nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, sig_network)
+
+training_in = np.linspace(-6, 6, 20)
+
+demo(sigmoid, sig_network, nag_optimizer, training_in, "sigmoid function")
 
 plt.show()
