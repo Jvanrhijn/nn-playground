@@ -25,9 +25,9 @@ result = network.forward_pass(some_input)
 
 **Examples**
 
-Some examples are included which show how to use the API. One example demonstrates the network's ability to perform certain tasks (at the moment, approximating a single-valued function on a given interval). The other shows the difference in performance when using different convex optimization algorithms (currently only stochastic gradient descent and Nesterov's accelerated gradient descent).
+Some examples are included which show how to use the API. One example demonstrates the network's ability to perform certain tasks (at the moment, approximating a single-valued function on a given interval). The other shows the difference in performance when using different convex optimization algorithms (currently only stochastic gradient descent and Nesterov's accelerated gradient descent). The below figures show the network's attempt at fitting a Gaussian function of standard deviation 0.25 and zero mean, usig stochastic GD and Nesterov GD. The cost function is a mean square error cost.
 
-[![optimization demo](https://i.imgur.com/FlU5sj1.png)](https://i.imgur.com/FlU5sj1.png)q
+[![optimization demo](https://i.imgur.com/FlU5sj1.png)](https://i.imgur.com/FlU5sj1.png)
 
 **Dependencies**
 
