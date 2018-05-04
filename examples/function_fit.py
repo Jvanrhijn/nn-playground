@@ -10,14 +10,14 @@ from src.util import sigmoid
 np.random.seed(0)
 
 
-def demo(func, network, optimizer, training_in, func_name, epochs):
+def demo(func, network, optimizer, training_in, func_name, epochs, quiet=True):
     # Generate training data
     training_out = func(training_in)
     training_input = np.array([[data_point] for data_point in training_in])
     training_output = np.array([[data_point] for data_point in training_out])
 
     print("Training network to fit: %s" % func_name)
-    costs = network.train(training_input, training_output, epochs, optimizer, quiet=True, save=True)
+    costs = network.train(training_input, training_output, epochs, optimizer, quiet=quiet, save=True)
     print("Starting cost: {0}\n""Final cost: {1}\n".format(costs[0], costs[-1]))
 
     # Validate training set using points between training input points
@@ -51,18 +51,18 @@ def gaussian_function(a, b, c, x):
 
 
 """Linear function example"""
-num_hidden = 2
+num_hidden = 1
 neurons_per_hidden = 50
 input_size = 1
 output_size = 1
-learning_rate = 0.0001
-mom_par = 0.5
+learning_rate = 0.002
+mom_par = 0.8
 
-epochs = 200
+epochs = 250
 
 training_in = np.linspace(-1, 1, 20)
 
-lin_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.mse)
+lin_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.LinearLayer, mod.mse)
 
 nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, lin_network)
 
@@ -70,18 +70,18 @@ demo(lambda x: linear_function(-2, 2, x), lin_network, nag_optimizer, training_i
 
 
 """Quadratic function example"""
-num_hidden = 2
+num_hidden = 1
 neurons_per_hidden = 50
 input_size = 1
 output_size = 1
-learning_rate = 0.02
-mom_par = 0.7
+learning_rate = 0.001
+mom_par = 0.8
 
-epochs = 200
+epochs = 2000
 
 training_in = np.linspace(-1, 1, 20)
 
-quad_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.SigmoidLayer, mod.mse)
+quad_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse)
 
 nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, quad_network)
 
@@ -93,10 +93,10 @@ num_hidden = 1
 neurons_per_hidden = 50
 input_size = 1
 output_size = 1
-learning_rate = 0.002
-mom_par = 0.9
+learning_rate = 0.01
+mom_par = 0.75
 
-epochs = 1000
+epochs = 5000
 
 gauss_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse)
 
@@ -108,14 +108,14 @@ demo(lambda x: gaussian_function(1, 0, .25, x), gauss_network, nag_optimizer, tr
 
 
 """Sigmoid function example"""
-num_hidden = 2
+num_hidden = 1
 neurons_per_hidden = 50
 input_size = 1
 output_size = 1
 learning_rate = 0.01
-mom_par = 0.8
+mom_par = 0.7
 
-epochs = 500
+epochs = 2000
 
 sig_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.SigmoidLayer, mod.mse)
 
