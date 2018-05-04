@@ -89,7 +89,7 @@ class ReLuLayer(Layer):
         self._grad_weights = inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape)
         self._grad_weights[outputs == 0] = 0
         self._grad_biases = np.ones(self.num_neurons)
-        self._grad_weights[outputs == 0] = 0
+        self._grad_biases[outputs == 0] = 0
         return outputs
 
 

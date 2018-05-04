@@ -51,8 +51,8 @@ def gaussian_function(a, b, c, x):
 
 
 """Linear function example"""
-num_hidden = 1
-neurons_per_hidden = 100
+num_hidden = 2
+neurons_per_hidden = 50
 input_size = 1
 output_size = 1
 learning_rate = 0.0001
@@ -71,13 +71,13 @@ demo(lambda x: linear_function(-2, 2, x), lin_network, nag_optimizer, training_i
 
 """Quadratic function example"""
 num_hidden = 2
-neurons_per_hidden = 100
+neurons_per_hidden = 50
 input_size = 1
 output_size = 1
-learning_rate = 0.001
-mom_par = 0.9
+learning_rate = 0.02
+mom_par = 0.7
 
-epochs = 500
+epochs = 200
 
 training_in = np.linspace(-1, 1, 20)
 
@@ -108,11 +108,11 @@ demo(lambda x: gaussian_function(1, 0, .25, x), gauss_network, nag_optimizer, tr
 
 
 """Sigmoid function example"""
-num_hidden = 1
-neurons_per_hidden = 100
+num_hidden = 2
+neurons_per_hidden = 50
 input_size = 1
 output_size = 1
-learning_rate = 0.001
+learning_rate = 0.01
 mom_par = 0.8
 
 epochs = 2000
