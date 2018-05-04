@@ -19,13 +19,15 @@ def demo(func, network, optimizer, training_in, func_name):
     costs = network.train(training_input, training_output, epochs, optimizer, quiet=True, save=True)
     print("Starting cost: {0}\n""Final cost: {1}\n".format(costs[0], costs[-1]))
 
-    # Validate training set
-    outputs = np.zeros(len(training_input))
+    # Validate training set using points between training input points
+    validation_in = np.linspace(training_in[0], training_in[-1], 10*len(training_in))
+    validation_input = np.array([[data_point] for data_point in validation_in])
+    outputs = np.zeros(len(validation_in))
     for idx in range(len(outputs)):
-        outputs[idx] = network.forward_pass(training_input[idx])[0]
+        outputs[idx] = network.forward_pass(validation_input[idx])[0]
 
     fig, ax = plt.subplots(2)
-    ax[0].plot(training_in, outputs, label='network')
+    ax[0].plot(validation_in, outputs, label='network')
     ax[0].plot(training_in, training_out, '.', label='training')
     ax[0].legend()
     ax[1].semilogy(costs)
@@ -72,13 +74,13 @@ neurons_per_hidden = 100
 input_size = 1
 output_size = 1
 learning_rate = 0.001
-mom_par = 0.7
+mom_par = 0.9
 
 epochs = 500
 
 training_in = np.linspace(-1, 1, 20)
 
-quad_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse)
+quad_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.SigmoidLayer, mod.mse)
 
 nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, quad_network)
 
