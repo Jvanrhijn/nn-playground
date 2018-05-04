@@ -21,9 +21,6 @@ class Layer:
         """Pass inputs through the network"""
         pass
 
-    def connect_next(self, next_layer):
-        pass
-
     def back_propagate(self, gradient_in):
         """Propagate gradients backward through the layer and save weight/bias gradients
         :param gradients_in: vector of gradients (dLoss/dy) heading into each neuron
