@@ -14,10 +14,10 @@ nag_optim = src.optim.NAGOptimizer(learn_rate, momentum_parameter, network)
 This network has a tanh activation function, and uses Nesterov's accelerated gradient descent algorithm to optimize a mean square error cost function. Now, train your network on the input data:
 
 ~~~python
-costs = network.train(training_data, training_answers, epochs, nag_optim, quiet=True, save=True)
+costs = network.train(training_data, training_answers, epochs, nag_optim, quiet=False, save=True)
 ~~~
 
-If you set `quiet=True`, the trainer will print the cost function for the whole data set after each training epoch. Finally, run the network on any other data point:
+If you set `quiet=True`, the trainer will print the cost function for the whole data set after each training epoch. The `save` kwarg saves the cost function for each epoch. Finally, run the network on any other data point:
 
 ~~~python
 result = network.forward_pass(some_input)
