@@ -41,7 +41,7 @@ class Test(unittest.TestCase):
                 correct += 1
         start_acc = correct / train_data.shape[0]
 
-        nesterov = opt.NAGOptimizer(0.01, 0.9, network)
+        nesterov = opt.NAGOptimizer(0.001, 0.4, network)
         costs = network.train(train_data, train_outputs, 1000, nesterov,
                               quiet=False, save=True)
 
