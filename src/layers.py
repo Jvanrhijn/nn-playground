@@ -6,8 +6,8 @@ class Layer:
     """Layer of a fully connected neural network"""
     def __init__(self, num_neurons, num_inputs):
         self._num_neurons = num_neurons
-        self._weights = 0.01*np.random.randn(num_neurons, num_inputs)
-        self._biases = 0.01*np.random.randn(num_neurons)
+        self._weights = 1*np.random.randn(num_neurons, num_inputs)
+        self._biases = 1*np.random.randn(num_neurons)
         # Gradients of output with respect to input/weights/biases
         self._grad_inputs = 0
         self._grad_weights = 0
@@ -111,4 +111,15 @@ class SigmoidLayer(Layer):
         self._grad_inputs = sigmoid_grad[np.newaxis, :].T * self._weights
         self._grad_weights = sigmoid_grad[np.newaxis, :].T * (inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape))
         self._grad_biases = np.ones(self._num_neurons) * sigmoid_grad
+        return outputs
+
+
+class TanhLayer(Layer):
+    """tanh activated layer"""
+    def forward_pass(self, inputs):
+        outputs = np.tanh(np.dot(self._weights, inputs) + self._biases)
+        tanh_grad = 1 - outputs**2
+        self._grad_inputs = tanh_grad[np.newaxis, :].T * self._weights
+        self._grad_weights = tanh_grad[np.newaxis, :].T * (inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape))
+        self._grad_biases = np.ones(self._num_neurons) * tanh_grad
         return outputs

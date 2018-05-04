@@ -28,3 +28,9 @@ class NAGOptimizer:
             self._momentum[idx] = self._mom_par*self._momentum[idx] + self._learn_rate * layer._weight_grad
             layer.weights -= self._mom_par * momentum_prev + (1 + self._mom_par) * self._momentum[idx]
 
+
+class RMSPROptmizer:
+
+    def __init__(self, learn_rate):
+        pass
+
