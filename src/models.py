@@ -7,11 +7,11 @@ def mse(outputs, correct_outputs):
     return cost, cost_grad
 
 
-def svm(outputs, correct_outputs):
-    terms = np.maximum(outputs - outputs[correct_outputs] + 1, 0)
-    terms[correct_outputs] = 0
+def svm(outputs, correct_label):
+    terms = np.maximum(outputs - outputs[correct_label] + 1, 0)
+    terms[correct_label] = 0
     cost = terms.sum()
-    cost_grad = terms.count_nonzero()
+    cost_grad = np.count_nonzero(terms)
     return cost, cost_grad
 
 
