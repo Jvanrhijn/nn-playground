@@ -23,6 +23,7 @@ def demo(func, network, optimizer, training_in, func_name):
     # Validate training set using points between training input points
     validation_in = np.linspace(training_in[0], training_in[-1], 10*len(training_in))
     validation_input = np.array([[data_point] for data_point in validation_in])
+
     outputs = np.zeros(len(validation_in))
     for idx in range(len(outputs)):
         outputs[idx] = network.forward_pass(validation_input[idx])[0]
@@ -52,13 +53,13 @@ def gaussian_function(a, b, c, x):
 
 """Linear function example"""
 num_hidden = 1
-neurons_per_hidden = 100
+neurons_per_hidden = 50
 input_size = 1
 output_size = 1
 learning_rate = 0.0001
 mom_par = 0.5
 
-epochs = 500
+epochs = 5000
 
 training_in = np.linspace(-1, 1, 20)
 
@@ -71,11 +72,11 @@ demo(lambda x: linear_function(-2, 2, x), lin_network, nag_optimizer, training_i
 
 """Quadratic function example"""
 num_hidden = 2
-neurons_per_hidden = 100
+neurons_per_hidden = 20
 input_size = 1
 output_size = 1
-learning_rate = 0.001
-mom_par = 0.9
+learning_rate = 0.05
+mom_par = 0.6
 
 epochs = 500
 
@@ -90,11 +91,11 @@ demo(lambda x: quadratic_function(1, 0, 0, x), quad_network, nag_optimizer, trai
 
 """Gaussian function example"""
 num_hidden = 1
-neurons_per_hidden = 100
+neurons_per_hidden = 10
 input_size = 1
 output_size = 1
-learning_rate = 0.001
-mom_par = 0.8
+learning_rate = 0.01
+mom_par = 0.6
 
 epochs = 2000
 
@@ -109,11 +110,11 @@ demo(lambda x: gaussian_function(1, 0, .25, x), gauss_network, nag_optimizer, tr
 
 """Sigmoid function example"""
 num_hidden = 1
-neurons_per_hidden = 100
+neurons_per_hidden = 10
 input_size = 1
 output_size = 1
-learning_rate = 0.001
-mom_par = 0.8
+learning_rate = 0.01
+mom_par = 0.6
 
 epochs = 2000
 

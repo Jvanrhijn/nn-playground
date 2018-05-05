@@ -28,17 +28,7 @@ def demo(func, network, optimizer, training_in, func_name, plot_title=None):
     for idx in range(len(outputs)):
         outputs[idx] = network.forward_pass(validation_input[idx])[0]
 
-    fig, ax = plt.subplots(2)
-    if plot_title is not None:
-        ax[0].set_title(plot_title)
-    ax[0].plot(validation_in, outputs, label='network')
-    ax[0].plot(training_in, training_out, '.', label='training')
-    ax[0].legend()
-    ax[1].semilogy(costs)
-    ax[1].set_ylabel("Cost function")
-    ax[1].set_xlabel("Epoch")
-    ax[0].grid(), ax[1].grid()
-    return fig, ax
+    return validation_in, outputs, costs
 
 
 def gaussian_function(a, b, c, x):
@@ -46,15 +36,15 @@ def gaussian_function(a, b, c, x):
 
 
 # Set up hyperparameters
-learn_rate_sgd = 0.01
+learn_rate_sgd = 0.02
 learn_rate_nag = 0.01
 mom_par = 0.6
 
-neurons_per_hidden = 10
+neurons_per_hidden = 100
 num_hidden = 1
 input_size = 1
 output_size = 1
-epochs = 2000
+epochs = 10000
 
 network_sgd = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse)
 network_nag = copy.deepcopy(network_sgd)
@@ -66,8 +56,23 @@ func = lambda x: gaussian_function(1, 0, 0.25, x)
 
 training_in = np.linspace(-1, 1, 20)
 
-demo(func, network_sgd, optim_sgd, training_in, "gaussian function - SGD", plot_title="Stochastic gradient descent")
-demo(func, network_nag, optim_nag, training_in, "gaussian function - NAG", plot_title="Nesterov's accelerated GD")
+x_sgd, y_sgd, costs_sgd = demo(func, network_sgd, optim_sgd, training_in, "gaussian function - SGD", plot_title="Stochastic gradient descent")
+x_nag, y_nag, costs_nag = demo(func, network_nag, optim_nag, training_in, "gaussian function - NAG", plot_title="Nesterov's accelerated GD")
+
+fig = plt.figure()
+ax_sgd = fig.add_subplot(121)
+ax_nag = fig.add_subplot(122)
+ax = [ax_sgd, ax_nag]
+ax[0].plot(x_sgd, y_sgd, label="SGD")
+ax[0].plot(x_nag, y_nag, label="NAG")
+ax[0].plot(training_in, func(training_in), '.', label="Training")
+
+ax[1].semilogy(costs_sgd, label="SGD"), ax[1].plot(costs_nag, label="NAG")
+ax[1].set_xlabel("Epoch")
+ax[1].set_ylabel("Cost function")
+
+for axis in ax:
+    axis.legend(), axis.grid()
 
 plt.show()
 
