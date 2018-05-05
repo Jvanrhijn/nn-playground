@@ -23,9 +23,9 @@ class Test(unittest.TestCase):
         network.back_prop(cost_grad)
 
     def test_train_net(self):
-        network = net.NeuralNetwork(2, 2, 1, 10, ly.ReLuLayer, mod.mse)
+        network = net.NeuralNetwork(2, 2, 1, 10, ly.TanhLayer, mod.mse)
 
-        train_data = np.random.random(size=(100, 2))
+        train_data = np.random.random(size=(10, 2))
         train_outputs = np.zeros(train_data.shape[0])
         for idx in range(len(train_outputs)):
             if train_data[idx, 0] > train_data[idx, 1]:
@@ -41,8 +41,8 @@ class Test(unittest.TestCase):
                 correct += 1
         start_acc = correct / train_data.shape[0]
 
-        nesterov = opt.NAGOptimizer(0.001, 0.4, network)
-        costs = network.train(train_data, train_outputs, 1000, nesterov,
+        nesterov = opt.NAGOptimizer(0.01, 0.95, network)
+        costs = network.train(train_data, train_outputs, 10000, nesterov,
                               quiet=False, save=True)
 
         outputs = np.zeros(train_data.shape)
@@ -58,7 +58,8 @@ class Test(unittest.TestCase):
         print("Final accuracy: {}".format(acc))
 
         fig, ax = plt.subplots(1)
-        ax.plot(costs)
+        ax.semilogy(costs)
+        ax.grid()
         ax.set_xlabel("Epoch"), ax.set_ylabel("Objective function")
         plt.show()
 

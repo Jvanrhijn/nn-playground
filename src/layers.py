@@ -21,9 +21,6 @@ class Layer:
         """Pass inputs through the network"""
         pass
 
-    def connect_next(self, next_layer):
-        pass
-
     def back_propagate(self, gradient_in):
         """Propagate gradients backward through the layer and save weight/bias gradients
         :param gradients_in: vector of gradients (dLoss/dy) heading into each neuron
@@ -84,12 +81,10 @@ class ReLuLayer(Layer):
         """Calculate the output of this layer given the input
         Also save gradients of output wrt input, weights and biases"""
         outputs = np.maximum(0, np.dot(self._weights, inputs) + self._biases)
-        self._grad_inputs = self._weights
-        self._grad_inputs[outputs == 0] = 0
-        self._grad_weights = inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape)
-        self._grad_weights[outputs == 0] = 0
-        self._grad_biases = np.ones(self.num_neurons)
-        self._grad_weights[outputs == 0] = 0
+        relu_grad = 1. * inputs > 0
+        self._grad_inputs = self._weights * relu_grad
+        self._grad_weights = inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape) * relu_grad
+        self._grad_biases = np.ones(self.num_neurons) * relu_grad
         return outputs
 
 
