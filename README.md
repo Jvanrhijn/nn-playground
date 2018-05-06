@@ -29,6 +29,10 @@ Some examples are included which show how to use the API. One example demonstrat
 
 [![optimization demo](https://imgur.com/fkei4pO.png)](https://imgur.com/fkei4pO.png)
 
+The below example shows the network's classification capabilities. It was given 100 randomly generated points, each assigned a color - red if it lies above a given line, blue if below. The figure below shows the result of running the network on a set of 1000 randomly generated points of validation data. This network consisted of a single hidden layer with 1000 ReLu activated neurons, and was optimized with Nesterov's algorithm.
+
+[![classification demo](https://imgur.com/Rv8lZR4.png)](https://imgur.com/Rv8lZR4.png)
+
 **Dependencies**
 
 * Python 3.x
