@@ -7,7 +7,8 @@ Neural network implemented in Python + NumPy, mostly to teach myself about how t
 Import src.network, src.models, src.layers and src.optim. Create your `training_data` and `training_answers`. Choose which algorithm and which type of activation function to use, then create the network and optimizer:
 
 ~~~python
-network = src.network.NeuralNet(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse)
+network = src.network.NeuralNet(input_size, output_size, num_hidden, neurons_per_hidden, layer.TanhLayer, models.mse)
+
 nag_optim = src.optim.NAGOptimizer(learn_rate, momentum_parameter, network)
 ~~~
 
@@ -29,7 +30,7 @@ Some examples are included which show how to use the API. One example demonstrat
 
 [![optimization demo](https://imgur.com/fkei4pO.png)](https://imgur.com/fkei4pO.png)
 
-The below example shows the network's classification capabilities. It was given 100 randomly generated points, each assigned a color - red if it lies above a given line, blue if below. The figure below shows the result of running the network on a set of 1000 randomly generated points of validation data. This network consisted of a single hidden layer with 1000 ReLu activated neurons, and was optimized with Nesterov's algorithm for an SVM cost function. The resulting accuracy on the valdation set was 97.1%, versus 63.1% before training (corresponging to the area below the separation line).
+The below example shows the network's classification capabilities. It was given 100 randomly generated points, each assigned a color - red if it lies above a given line, blue if below. The figure below shows the result of running the network on a set of 1000 randomly generated points of validation data. This network consisted of a single hidden layer with 1000 ReLu activated neurons, and was optimized with Nesterov's algorithm for an SVM cost function. The resulting accuracy on the validation set was 97.1%, versus 63.1% before training (corresponding to the area below the separation line).
 
 [![classification demo](https://imgur.com/Rv8lZR4.png)](https://imgur.com/Rv8lZR4.png)
 
