@@ -11,7 +11,8 @@ def svm(outputs, correct_label):
     terms = np.maximum(outputs - outputs[correct_label] + 1, 0)
     terms[correct_label] = 0
     cost = terms.sum()
-    cost_grad = np.count_nonzero(terms)
+    cost_grad = np.ones(len(outputs))
+    cost_grad[terms == 0] = 0
     return cost, cost_grad
 
 

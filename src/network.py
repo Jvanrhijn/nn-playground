@@ -25,9 +25,10 @@ class NeuralNetwork:
                 total_cost += cost
                 self.back_prop(cost_grad)  # Stochastic gradient descent or variants
                 optimizer.optimize(self)
-            costs[epoch] = total_cost / train_data.shape[0]
+            if save:
+                costs[epoch] = total_cost / train_data.shape[0]
             if not quiet:
-                print("Epoch: {0} | Cost: {1}".format(epoch, costs[epoch]))
+                print("Epoch: {0} | Cost: {1}".format(epoch, total_cost/train_data.shape[0]))
         if save:
             return costs
 

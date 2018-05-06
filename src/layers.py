@@ -81,10 +81,10 @@ class ReLuLayer(Layer):
         """Calculate the output of this layer given the input
         Also save gradients of output wrt input, weights and biases"""
         outputs = np.maximum(0, np.dot(self._weights, inputs) + self._biases)
-        relu_grad = 1. * inputs > 0
-        self._grad_inputs = self._weights * relu_grad
-        self._grad_weights = inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape) * relu_grad
-        self._grad_biases = np.ones(self.num_neurons) * relu_grad
+        relu_grad = 1. * (outputs > 0)
+        self._grad_inputs = relu_grad[np.newaxis, :].T * self._weights
+        self._grad_weights = relu_grad[np.newaxis, :].T * (inputs[np.newaxis, :] * np.ones(self._grad_inputs.shape))
+        self._grad_biases = np.ones(self._num_neurons) * relu_grad
         return outputs
 
 

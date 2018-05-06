@@ -9,8 +9,8 @@ class GDOptimizer:
 
     def optimize(self, network):
         for layer in network.layers:
-            layer.weights -= layer._weight_grad * self._learn_rate
-            layer.biases -= layer._biases_grad * self._learn_rate
+            layer.weights -= layer.weight_grad * self._learn_rate
+            layer.biases -= layer.biases_grad * self._learn_rate
 
 
 class MomentumOptimizer:
