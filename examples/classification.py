@@ -46,10 +46,10 @@ input_size = 2
 output_size = 2
 num_hidden = 1
 neurons_per_hidden = 100
-epochs = 6000
+epochs = 5000
 
-learn_rate = 0.00001
-mom_par = 0.6
+learn_rate = 0.0000001
+mom_par = 0.9
 
 network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.svm)
 
