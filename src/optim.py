@@ -60,14 +60,19 @@ class AdaGradOptimizer:
         self._learn_rate = learn_rate
         self._offset = offset
         self._grad_square_sum = []
+        self._grad_bias_square_sum = []
         self._network = network
         for layer in network.layers:
             self._grad_square_sum.append(np.zeros(layer.weights.shape))
+            self._grad_bias_square_sum.append(np.zeros(layer.biases.shape))
 
     def optimize(self, network):
         for idx, layer in enumerate(network.layers):
             self._grad_square_sum[idx] += layer.weight_grad**2
             layer.weights -= self._learn_rate / np.sqrt(self._grad_square_sum[idx] + self._offset) * layer.weight_grad
+            self._grad_bias_square_sum[idx] += layer.biases_grad**2
+            layer.biases -= self._learn_rate / np.sqrt(self._grad_bias_square_sum[idx] + self._offset) \
+                * layer.biases_grad
 
 
 class AdaDeltaOptimizer:
@@ -76,33 +81,60 @@ class AdaDeltaOptimizer:
         self._window = window
         self._network = network
         self._offset = offset
-        self._grad_rms = []
-        self._grad_rms_prev = []
-        self._weight_rms = []
-        self._weight_rms_prev = []
-        self._weight_update_prev = []
-        for layer in network.layers:
-            self._grad_rms.append(np.zeros(layer.weights.shape))
-            self._grad_rms_prev.append(np.zeros(layer.weights.shape))
-            self._weight_rms.append(np.zeros(layer.weights.shape))
-            self._weight_rms_prev.append(np.zeros(layer.weights.shape))
-            self._weight_update_prev.append(np.zeros(layer.weights.shape))
+        self._grad_weights_mov_av = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
+        self._weight_step_mov_av = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
+        self._weight_step_prev = [np.zeros(layer.weights.shape) for layer in network.layers]
+        self._grad_biases_mov_av = [np.zeros(layer.biases_grad.shape) for layer in network.layers]
+        self._bias_step_mov_av = [np.zeros(layer.biases_grad.shape) for layer in network.layers]
+        self._bias_step_prev = [np.zeros(layer.biases.shape) for layer in network.layers]
 
     def optimize(self, network):
         for idx, layer in enumerate(network.layers):
-            mov_av_grad = self._window * (self._grad_rms_prev[idx]**2 - self._offset) + (1 - self._window) \
-                * layer.weight_grad**2
-            self._grad_rms[idx] = np.sqrt(mov_av_grad + self._offset)
-            mov_av_weights = self._window * (self._weight_rms_prev[idx]**2 - self._offset) + (1 - self._window) \
-                * self._weight_update_prev[idx]**2
-            self._weight_rms_prev[idx] = np.sqrt(mov_av_weights + self._offset)
-            self._weight_update_prev[idx] = - self._weight_rms_prev[idx] / self._grad_rms[idx]
-            self._grad_rms_prev[idx] = self._grad_rms[idx]
-            layer.weights += self._weight_update_prev[idx]
+            # Update weights according to AdaDelta
+            self._grad_weights_mov_av[idx] = self._update_mov_av(self._grad_weights_mov_av[idx], layer.weight_grad)
+            grad_weights_rms = self._compute_rms(self._grad_weights_mov_av[idx])
+            self._weight_step_mov_av[idx] = self._update_mov_av(self._weight_step_mov_av[idx],
+                                                                self._weight_step_prev[idx])
+            weight_step_rms = self._compute_rms(self._weight_step_mov_av[idx])
+            self._weight_step_prev[idx] = self._get_step(weight_step_rms, grad_weights_rms, layer.weight_grad)
+            layer.weights += self._weight_step_prev[idx]
+
+            # Update biases according to AdaDelta
+            self._grad_biases_mov_av[idx] = self._update_mov_av(self._grad_biases_mov_av[idx], layer.biases_grad)
+            grad_biases_rms = self._compute_rms(self._grad_biases_mov_av[idx])
+            self._bias_step_mov_av[idx] = self._update_mov_av(self._bias_step_mov_av[idx], self._bias_step_prev[idx])
+            bias_step_rms = self._compute_rms(self._bias_step_mov_av[idx])
+            self._bias_step_prev[idx] = self._get_step(bias_step_rms, grad_biases_rms, layer.biases_grad)
+            layer.biases += self._bias_step_prev[idx]
+
+    def _update_mov_av(self, mov_av, new):
+        return self._window * mov_av + (1 - self._window) * new**2
+
+    def _compute_rms(self, mov_av):
+        return np.sqrt(mov_av + self._offset)
+
+    @staticmethod
+    def _get_step(step_rms, grad_rms, grad):
+        return -step_rms / grad_rms * grad
 
 
-class RMSPROptmizer:
+class RMSpropOptmizer:
 
-    def __init__(self, learn_rate):
-        pass
+    def __init__(self, learn_rate, window, network, offset=10**-8):
+        self._learn_rate = learn_rate
+        self._window = window
+        self._offset = offset
+        self._network = network
+        self._grad_weights_rms = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
+        self._grad_biases_rms = [np.zeros(layer.biases_grad.shape) for layer in network.layers]
+
+    def optimize(self, network):
+        for idx, layer in enumerate(network.layers):
+            self._grad_weights_rms[idx] = self._update_mov_av(self._grad_weights_rms[idx], layer.weight_grad)
+            self._grad_biases_rms[idx] = self._update_mov_av(self._grad_biases_rms[idx], layer.biases_grad)
+            layer.weights -= self._learn_rate / np.sqrt(self._grad_weights_rms[idx] + self._offset) * layer.weight_grad
+            layer.biases -= self._learn_rate / np.sqrt(self._grad_biases_rms[idx] + self._offset) * layer.biases_grad
+
+    def _update_mov_av(self, rms, grads):
+        return  self._window * rms + (1 - self._window) * grads**2
 
