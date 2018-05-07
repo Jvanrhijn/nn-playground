@@ -1,11 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 import src.network as net
 import src.layers as ly
 import src.optim as opt
 import src.models as mod
-sns.set()
 
 np.random.seed(0)
 
@@ -47,8 +45,8 @@ train_labels = np.array([0 if X[1] > tanh_sep(X[0]) else 1
 input_size = 2
 output_size = 2
 num_hidden = 1
-neurons_per_hidden = 1000
-epochs = 1000
+neurons_per_hidden = 100
+epochs = 6000
 
 learn_rate = 0.00001
 mom_par = 0.6
@@ -80,6 +78,7 @@ for point, result in zip(test_data, results):
     color = colors[result.argmax()]
     ax_data.plot(point[0], point[1], 'o', color=color)
 ax_data.plot(x_sep, tanh_sep(x_sep), color="green", linewidth=2)
+ax_cost.grid()
 
 plt.show()
 

@@ -7,6 +7,7 @@ class NeuralNetwork:
     def __init__(self, input_size, output_size, num_hidden, neurons_per_hidden, layer_type, cost):
         self._layer_type = layer_type
         self.cost = cost
+        self.cost_grad = 0
         # Generate hidden layers
         self._layers = [layer_type(neurons_per_hidden, input_size)]
         for idx in range(num_hidden-1):
@@ -22,6 +23,7 @@ class NeuralNetwork:
             for idx, example in enumerate(train_data):
                 output = self.forward_pass(example)
                 cost, cost_grad = self.cost(output, train_output[idx])
+                self.cost_grad = cost_grad
                 total_cost += cost
                 self.back_prop(cost_grad)  # Stochastic gradient descent or variants
                 optimizer.optimize(self)

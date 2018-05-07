@@ -45,6 +45,22 @@ class NAGOptimizer:
             layer.weights -= self._mom_par * momentum_prev + (1 + self._mom_par) * self._momentum[idx]
 
 
+class AdaGradOptimizer:
+
+    def __init__(self, learn_rate, network, offset=10**-8):
+        self._learn_rate = learn_rate
+        self._offset = offset
+        self._grad_square_sum = []
+        self._network = network
+        for layer in network.layers:
+            self._grad_square_sum.append(np.zeros(layer.weights.shape))
+
+    def optimize(self, network):
+        for idx, layer in enumerate(network.layers):
+            self._grad_square_sum[idx] += layer.weight_grad**2
+            layer.weights -= self._learn_rate / np.sqrt(self._grad_square_sum[idx] + self._offset) * layer.weight_grad
+
+
 class RMSPROptmizer:
 
     def __init__(self, learn_rate):
