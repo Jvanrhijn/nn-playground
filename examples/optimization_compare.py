@@ -70,10 +70,12 @@ fig = plt.figure()
 ax_fit = fig.add_subplot(121)
 ax_cost = fig.add_subplot(122)
 ax = [ax_fit, ax_cost]
-ax[0].plot(x_sgd, y_sgd, label="SGD")
-ax[0].plot(x_nag, y_nag, label="NAG")
-ax[0].plot(x_adagrad, y_adagrad, label="AdaGrad")
-ax[0].plot(training_in, func(training_in), '.', label="Training")
+
+ax[0].plot(x_sgd, func(x_sgd) - y_sgd, label="SGD")
+ax[0].plot(x_nag, func(x_nag) - y_nag, label="NAG")
+ax[0].plot(x_adagrad, func(x_adagrad) - y_adagrad, label="AdaGrad")
+#ax[0].plot(training_in, func(training_in), '.', label="Training")
+ax[0].set_ylabel("Error w.r.t. exact Gaussian")
 
 ax[1].semilogy(costs_sgd, label="SGD"), ax[1].plot(costs_nag, label="NAG"), ax[1].plot(costs_adagrad, label="AdaGrad")
 ax[1].set_xlabel("Epoch")
