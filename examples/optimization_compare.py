@@ -43,24 +43,26 @@ mom_par = 0.99
 
 learn_rate_adagrad = 0.1
 
-window_size_adadelta = 0.9
+window_size_adadelta = 0.99999
 
-window_size_rmsprop = 0.999
+window_size_rmsprop = 0.999999
 learn_rate_rmsprop = 0.0001
 
 neurons_per_hidden = 100
 num_hidden = 1
 input_size = 1
 output_size = 1
-epochs = 2000
+epochs = 10000
 
 network_sgd = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse)
 network_nag = copy.deepcopy(network_sgd)
+network_mom = copy.deepcopy(network_sgd)
 network_adagrad = copy.deepcopy(network_sgd)
 network_adadelta = copy.deepcopy(network_sgd)
 network_rmsprop = copy.deepcopy(network_sgd)
 
 optim_sgd = opt.GDOptimizer(learn_rate_sgd)
+optim_mom = opt.MomentumOptimizer(learn_rate_nag, mom_par, network_mom)
 optim_nag = opt.NAGOptimizer(learn_rate_nag, mom_par, network_nag)
 optim_adagrad = opt.AdaGradOptimizer(learn_rate_adagrad, network_nag)
 optim_adadelta = opt.AdaDeltaOptimizer(window_size_adadelta, network_nag)
@@ -74,6 +76,8 @@ x_sgd, y_sgd, costs_sgd = demo(func, network_sgd, optim_sgd, training_in, "gauss
                                plot_title="Stochastic gradient descent", quiet=False)
 x_nag, y_nag, costs_nag = demo(func, network_nag, optim_nag, training_in, "gaussian function - NAG",
                                plot_title="Nesterov's accelerated GD", quiet=False)
+x_mom, y_mom, costs_mom = demo(func, network_mom, optim_mom, training_in, "gaussian function - momentum",
+                               plot_title="Nesterov's  ", quiet=False)
 x_adagrad, y_adagrad, costs_adagrad = demo(func, network_adagrad, optim_adagrad, training_in, "gaussian function - AdaGrad",
                                            plot_title="AdaGrad", quiet=False)
 x_adadelta, y_adadelta, costs_adadelta= demo(func, network_adadelta, optim_adadelta, training_in, "gaussian function - AdaDelta",

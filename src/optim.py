@@ -136,5 +136,5 @@ class RMSpropOptmizer:
             layer.biases -= self._learn_rate / np.sqrt(self._grad_biases_rms[idx] + self._offset) * layer.biases_grad
 
     def _update_mov_av(self, rms, grads):
-        return  self._window * rms + (1 - self._window) * grads**2
+        return self._window * rms + (1 - self._window) * grads**2
 

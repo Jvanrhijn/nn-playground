@@ -16,13 +16,14 @@ def svm(outputs, correct_label):
     return cost, cost_grad
 
 
-def ce(outputs, correct_outputs):
-    cost = (-(correct_outputs*np.log(outputs) + (1 - correct_outputs)*np.log(1 - outputs))).sum()
-    cost_grad = (outputs - correct_outputs)/(outputs*(1 - outputs))
-    return cost, cost_grad
-
-
 def expc(outputs, correct_outputs, param):
     cost = param * np.exp(1/param*((outputs - correct_outputs)**2).sum())
     cost_grad = 2/param * (outputs - correct_outputs) * cost
+    return cost, cost_grad
+
+
+def ce(outputs, correct_label, offset=0):
+    sum = np.exp(outputs - max(outputs)).sum()
+    cost = -np.log(np.exp(outputs[correct_label] - max(outputs)) / sum)
+    cost_grad = np.exp(outputs - max(outputs)) / sum
     return cost, cost_grad

@@ -22,6 +22,7 @@ def tanh_sep(x):
 
 def test_accuracy(network, test_data, separation_line=sin_sep):
     correct = 0
+    colors = {0: 'red', 1: 'blue'}
     results = []
     for test in test_data:
         output = network.forward_pass(test)
@@ -37,7 +38,6 @@ def test_accuracy(network, test_data, separation_line=sin_sep):
 # else the point should be colored blue
 data_size = 100
 train_data = np.random.random((data_size, 2))
-colors = {0: 'red', 1: 'blue'}
 train_labels = np.array([0 if X[1] > tanh_sep(X[0]) else 1
                          for X in train_data])
 
@@ -49,6 +49,7 @@ neurons_per_hidden = 100
 epochs = 5000
 
 learn_rate = 0.0000001
+window = 0.1
 mom_par = 0.9
 
 network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.svm)
@@ -58,6 +59,10 @@ test_size = 1000
 test_data = np.random.random((test_size, 2))
 acc_before = test_accuracy(network, test_data, separation_line=tanh_sep)[0]
 
+#optimizer = opt.GDOptimizer(learn_rate)
+#optimizer = opt.AdaGradOptimizer(learn_rate, network)
+#optimizer = opt.AdaDeltaOptimizer(window, network)
+#optimizer = opt.RMSpropOptmizer(learn_rate, window, network)
 optimizer = opt.NAGOptimizer(learn_rate, mom_par, network)
 
 costs = network.train(train_data, train_labels, epochs, optimizer, quiet=False, save=True)
@@ -74,6 +79,7 @@ ax_cost.set_ylabel("Cost function")
 ax_cost.set_xlabel("Epoch")
 
 x_sep = np.linspace(0, 1, 1000)
+colors = {0: 'red', 1: 'blue'}
 for point, result in zip(test_data, results):
     color = colors[result.argmax()]
     ax_data.plot(point[0], point[1], 'o', color=color)
