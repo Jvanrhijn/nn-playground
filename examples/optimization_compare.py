@@ -46,7 +46,7 @@ learn_rate_adagrad = 0.1
 window_size_adadelta = 0.99999
 
 window_size_rmsprop = 0.999999
-learn_rate_rmsprop = 0.0001
+learn_rate_rmsprop = 0.001
 
 neurons_per_hidden = 100
 num_hidden = 1
@@ -92,14 +92,19 @@ ax = [ax_fit, ax_cost]
 
 ax[0].plot(x_sgd, func(x_sgd) - y_sgd, label="SGD")
 ax[0].plot(x_nag, func(x_nag) - y_nag, label="NAG")
+ax[0].plot(x_mom, func(x_mom) - y_mom, label="Momentum")
 ax[0].plot(x_adagrad, func(x_adagrad) - y_adagrad, label="AdaGrad")
 ax[0].plot(x_adadelta, func(x_adadelta) - y_adadelta, label="AdaDelta")
-ax[0].plot(x_rmsprop, func(x_rmsprop) - y_rmsprop, label="AdaDelta")
+ax[0].plot(x_rmsprop, func(x_rmsprop) - y_rmsprop, label="RMSProp")
 ax[0].plot(training_in, func(training_in) - func(training_in), '.', label="Training points")
 ax[0].set_ylabel("Error w.r.t. exact Gaussian")
 
-ax[1].semilogy(costs_sgd, label="SGD"), ax[1].semilogy(costs_nag, label="NAG"), ax[1].semilogy(costs_adagrad, label="AdaGrad")
-ax[1].semilogy(costs_adadelta, label="AdaDelta"), ax[1].semilogy(costs_rmsprop, label="RMSProp")
+ax[1].semilogy(costs_sgd, label="SGD")
+ax[1].semilogy(costs_mom, label="Momentum")
+ax[1].semilogy(costs_nag, label="NAG")
+ax[1].semilogy(costs_adagrad, label="AdaGrad")
+ax[1].semilogy(costs_adadelta, label="AdaDelta")
+ax[1].semilogy(costs_rmsprop, label="RMSProp")
 ax[1].set_xlabel("Epoch")
 ax[1].set_ylabel("Cost function")
 
