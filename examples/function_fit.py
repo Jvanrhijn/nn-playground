@@ -63,7 +63,7 @@ epochs = 5000
 
 training_in = np.linspace(-1, 1, 20)
 
-lin_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.mse)
+lin_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.LinearLayer, mod.mse)
 
 nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, lin_network)
 

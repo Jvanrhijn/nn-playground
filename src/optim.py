@@ -138,3 +138,45 @@ class RMSpropOptmizer:
     def _update_mov_av(self, rms, grads):
         return self._window * rms + (1 - self._window) * grads**2
 
+
+class AdamOptimizer:
+
+    def __init__(self, learn_rate, window, window_sq, network, offset=10**-8):
+        self._time_step = 0
+        self._learn_rate = learn_rate
+        self._window = window
+        self._window_sq = window_sq
+        self._network = network
+        self._offset = offset
+        self._mov_av_grad_weight = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
+        self._mov_av_grad_weight_sq = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
+        self._mov_av_grad_bias = [np.zeros(layer.biases_grad.shape) for layer in network.layers]
+        self._mov_av_grad_bias_sq = [np.zeros(layer.biases_grad.shape) for layer in network.layers]
+
+    def optimize(self, network):
+        self._time_step += 1
+        for idx, layer in enumerate(network.layers):
+            self._mov_av_grad_weight[idx] = self._update_mov_av(self._mov_av_grad_weight[idx], layer.weight_grad,
+                                                                self._window)
+            self._mov_av_grad_weight_sq[idx] = self._update_mov_av_sq(self._mov_av_grad_weight_sq[idx],
+                                                                      layer.weight_grad, self._window_sq)
+            self._mov_av_grad_bias[idx] = self._update_mov_av(self._mov_av_grad_bias[idx], layer.biases_grad,
+                                                              self._window)
+            self._mov_av_grad_bias_sq[idx] = self._update_mov_av_sq(self._mov_av_grad_bias_sq[idx], layer.biases_grad,
+                                                                    self._window_sq)
+            mov_av_grad_weight_corr = self._mov_av_grad_weight[idx] / (1 - self._window**self._time_step)
+            mov_av_grad_weight_sq_corr = self._mov_av_grad_weight_sq[idx] / (1 - self._window_sq**self._time_step)
+            mov_av_grad_bias_corr = self._mov_av_grad_bias[idx] / (1 - self._window**self._time_step)
+            mov_av_grad_bias_sq_corr = self._mov_av_grad_bias_sq[idx] / (1 - self._window_sq**self._time_step)
+            layer.weights -= self._learn_rate / (np.sqrt(mov_av_grad_weight_sq_corr) + self._offset) \
+                             * mov_av_grad_weight_corr
+            layer.biases -= self._learn_rate / (np.sqrt(mov_av_grad_bias_sq_corr) + self._offset) \
+                            * mov_av_grad_bias_corr
+
+    @staticmethod
+    def _update_mov_av_sq(rms, grads, window):
+        return window * rms + (1 - window) * grads**2
+
+    @staticmethod
+    def _update_mov_av(current, grads, window):
+        return window * current + (1 - window) * grads
