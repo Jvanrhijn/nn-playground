@@ -38,21 +38,24 @@ def gaussian_function(a, b, c, x):
 # Set up hyperparameters
 learn_rate_sgd = 0.02
 
-learn_rate_nag = 0.0002
+learn_rate_mom = 0.0002
 mom_par = 0.99
 
-learn_rate_adagrad = 0.1
+learn_rate_nag = 0.0003
+mom_par_nag = 0.99
 
-window_size_adadelta = 0.99999
+learn_rate_adagrad = 0.5
+
+window_size_adadelta = 0.99
 
 window_size_rmsprop = 0.9
-learn_rate_rmsprop = 0.000025
+learn_rate_rmsprop = 0.01
 
-learn_rate_adam = 0.01
+learn_rate_adam = 0.001
 window_grad_adam = 0.9
-window_sq_adam = 0.9999
+window_sq_adam = 0.999
 
-neurons_per_hidden = 100
+neurons_per_hidden = 50
 num_hidden = 1
 input_size = 1
 output_size = 1
@@ -67,8 +70,8 @@ network_rmsprop = copy.deepcopy(network_sgd)
 network_adam = copy.deepcopy(network_sgd)
 
 optim_sgd = opt.GDOptimizer(learn_rate_sgd)
-optim_mom = opt.MomentumOptimizer(learn_rate_nag, mom_par, network_mom)
-optim_nag = opt.NAGOptimizer(learn_rate_nag, mom_par, network_nag)
+optim_mom = opt.MomentumOptimizer(learn_rate_mom, mom_par, network_mom)
+optim_nag = opt.NAGOptimizer(learn_rate_nag, mom_par_nag, network_nag)
 optim_adagrad = opt.AdaGradOptimizer(learn_rate_adagrad, network_nag)
 optim_adadelta = opt.AdaDeltaOptimizer(window_size_adadelta, network_nag)
 optim_rmpsprop = opt.RMSpropOptmizer(learn_rate_rmsprop, window_size_rmsprop, network_rmsprop)
@@ -86,12 +89,12 @@ x_mom, y_mom, costs_mom = demo(func, network_mom, optim_mom, training_in, "gauss
                                plot_title="Nesterov's  ", quiet=True)
 x_adagrad, y_adagrad, costs_adagrad = demo(func, network_adagrad, optim_adagrad, training_in, "gaussian function - AdaGrad",
                                            plot_title="AdaGrad", quiet=True)
-#x_adadelta, y_adadelta, costs_adadelta= demo(func, network_adadelta, optim_adadelta, training_in, "gaussian function - AdaDelta",
-                                           #plot_title="AdaDelta", quiet=False)
+x_adadelta, y_adadelta, costs_adadelta= demo(func, network_adadelta, optim_adadelta, training_in, "gaussian function - AdaDelta",
+                                           plot_title="AdaDelta", quiet=True)
 x_rmsprop, y_rmsprop, costs_rmsprop = demo(func, network_rmsprop, optim_rmpsprop, training_in, "gaussian function - RMSProp",
                                              plot_title="RMSProp", quiet=True)
 x_adam, y_adam, costs_adam = demo(func, network_adam, optim_adam, training_in, "gaussian function - Adam",
-                                           plot_title="ADAM", quiet=False)
+                                           plot_title="ADAM", quiet=True)
 
 fig = plt.figure()
 ax_fit = fig.add_subplot(121)
@@ -99,10 +102,10 @@ ax_cost = fig.add_subplot(122)
 ax = [ax_fit, ax_cost]
 
 ax[0].plot(x_sgd, func(x_sgd) - y_sgd, label="SGD")
-ax[0].plot(x_nag, func(x_nag) - y_nag, label="NAG")
 ax[0].plot(x_mom, func(x_mom) - y_mom, label="Momentum")
+ax[0].plot(x_nag, func(x_nag) - y_nag, label="NAG")
 ax[0].plot(x_adagrad, func(x_adagrad) - y_adagrad, label="AdaGrad")
-#ax[0].plot(x_adadelta, func(x_adadelta) - y_adadelta, label="AdaDelta")
+ax[0].plot(x_adadelta, func(x_adadelta) - y_adadelta, label="AdaDelta")
 ax[0].plot(x_rmsprop, func(x_rmsprop) - y_rmsprop, label="RMSProp")
 ax[0].plot(x_adam, func(x_adam) - y_adam, label="ADAM")
 ax[0].plot(training_in, func(training_in) - func(training_in), '.', label="Training points")
@@ -112,7 +115,7 @@ ax[1].semilogy(costs_sgd, label="SGD")
 ax[1].semilogy(costs_mom, label="Momentum")
 ax[1].semilogy(costs_nag, label="NAG")
 ax[1].semilogy(costs_adagrad, label="AdaGrad")
-#ax[1].semilogy(costs_adadelta, label="AdaDelta")
+ax[1].semilogy(costs_adadelta, label="AdaDelta")
 ax[1].semilogy(costs_rmsprop, label="RMSProp")
 ax[1].semilogy(costs_adam, label="ADAM")
 ax[1].set_xlabel("Epoch")

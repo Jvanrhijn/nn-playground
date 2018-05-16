@@ -48,8 +48,11 @@ num_hidden = 1
 neurons_per_hidden = 100
 epochs = 5000
 
-learn_rate = 0.0000001
-window = 0.1
+#learn_rate = 0.0000001
+#learn_rate = 0.005
+learn_rate = 0.000005
+window = 0.9
+window_sq = 0.999
 mom_par = 0.9
 
 network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.svm)
@@ -63,7 +66,8 @@ acc_before = test_accuracy(network, test_data, separation_line=tanh_sep)[0]
 #optimizer = opt.AdaGradOptimizer(learn_rate, network)
 #optimizer = opt.AdaDeltaOptimizer(window, network)
 #optimizer = opt.RMSpropOptmizer(learn_rate, window, network)
-optimizer = opt.NAGOptimizer(learn_rate, mom_par, network)
+#optimizer = opt.NAGOptimizer(learn_rate, mom_par, network)
+optimizer = opt.AdamOptimizer(learn_rate, window, window_sq, network)
 
 costs = network.train(train_data, train_labels, epochs, optimizer, quiet=False, save=True)
 

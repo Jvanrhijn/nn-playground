@@ -20,9 +20,11 @@ class NeuralNetwork:
             costs = np.zeros(num_epochs)
         for epoch in range(num_epochs):
             total_cost = 0
-            for idx, example in enumerate(train_data):
+            for idx in range(len(train_data)):
+                ex = np.random.randint(len(train_data))
+                example = train_data[ex] # stochastic GD
                 output = self.forward_pass(example)
-                cost, cost_grad = self.cost(output, train_output[idx])
+                cost, cost_grad = self.cost(output, train_output[ex])
                 self.cost_grad = cost_grad
                 total_cost += cost
                 self.back_prop(cost_grad)  # Stochastic gradient descent or variants
