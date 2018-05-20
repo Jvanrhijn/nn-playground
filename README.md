@@ -30,9 +30,9 @@ Some examples are included which show how to use the API. One example demonstrat
 
 [![optimization demo](https://imgur.com/fkei4pO.png)](https://imgur.com/fkei4pO.png)
 
-The below example shows the network's classification capabilities. It was given 100 randomly generated points, each assigned a color - red if it lies above a given line, blue if below. The figure below shows the result of running the network on a set of 1000 randomly generated points of validation data. This network consisted of a single hidden layer with 1000 ReLu activated neurons, and was optimized with Nesterov's algorithm for an SVM cost function. The resulting accuracy on the validation set was 97.1%, versus 63.1% before training (corresponding to the area below the separation line).
+The below example shows the network's classification capabilities. It was given 200 randomly generated points, each assigned a color - red if it lies above a given line, blue if below and to the right of the vertical line, and green otherwise. The figure below shows the result of running the network on a set of 1000 randomly generated points of validation data. This network consisted of a two hidden layers with 500 ReLu activated neurons, and was optimized with Nesterov's algorithm for a cross-entropy cost function. The resulting accuracy on the validation set was 97.4%, versus 36.7% before training.
 
-[![classification demo](https://imgur.com/Rv8lZR4.png)](https://imgur.com/Rv8lZR4.png)
+[![classification demo](https://imgur.com/Z7XX1QG.png)](https://imgur.com/Z7XX1QG.png)
 
 **Dependencies**
 
