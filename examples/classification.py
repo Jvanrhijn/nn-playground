@@ -52,7 +52,7 @@ learn_rate = 1e-4
 window = 0.9
 window_sq = 0.999
 
-network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.ce,
+network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, activation='relu', cost='ce',
                             h_et_al=True)
 
 # Get pre-training accuracy

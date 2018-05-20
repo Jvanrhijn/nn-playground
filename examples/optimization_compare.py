@@ -49,19 +49,19 @@ def gaussian_function(a, b, c, x):
 
 
 # Set up hyperparameters
-learn_rate_sgd = 1e-2
+learn_rate_sgd = 1e-1
 
-learn_rate_nag = 2.5*1e-3
-mom_par_nag = 0.9
+learn_rate_nag = 1e-3
+mom_par_nag = 0.95
 
-learn_rate_adagrad = 5*1e-1
+learn_rate_adagrad = 1e-1
 
 window_size_adadelta = 0.999
 
 window_size_rmsprop = 0.9
-learn_rate_rmsprop = 5*1e-4
+learn_rate_rmsprop = 1e-3
 
-learn_rate_adam = 1e-4
+learn_rate_adam = 1e-3
 window_grad_adam = 0.9
 window_sq_adam = 0.999
 
@@ -69,10 +69,10 @@ neurons_per_hidden = 50
 num_hidden = 2
 input_size = 1
 output_size = 1
-epochs = 5000
+epochs = 100
 
 network_sgd = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden,
-                                ly.TanhLayer, mod.mse, h_et_al=True)
+                                activation='tanh', cost='mse', h_et_al=True)
 network_nag = copy.deepcopy(network_sgd)
 network_adagrad = copy.deepcopy(network_sgd)
 network_adadelta = copy.deepcopy(network_sgd)
@@ -118,7 +118,7 @@ ax[0].plot(training_in, func(training_in), '.', label="Training points")
 ax[1].semilogy(costs_sgd, label="SGD")
 ax[1].semilogy(costs_nag, label="NAG")
 ax[1].semilogy(costs_adagrad, label="AdaGrad")
-#ax[1].semilogy(costs_adadelta, label="AdaDelta")
+ax[1].semilogy(costs_adadelta, label="AdaDelta")
 ax[1].semilogy(costs_rmsprop, label="RMSProp")
 ax[1].semilogy(costs_adam, label="ADAM")
 ax[1].set_xlabel("Epoch")

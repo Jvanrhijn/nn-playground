@@ -1,24 +1,26 @@
 import numpy as np
 import src.layers as ly
 import src.optim as opt
+import src.models as mod
 
 
 class NeuralNetwork:
     """Implements a fully connected neural network"""
-    def __init__(self, input_size, output_size, num_hidden, neurons_per_hidden, layer_type, cost, h_et_al=False):
-        self._layer_type = layer_type
-        self.cost = cost
+    def __init__(self, input_size, output_size, num_hidden, neurons_per_hidden, activation='relu', cost='ce', h_et_al=False):
+        self._layer_type = self._set_activation(activation)
+        self.cost = self._set_cost(cost)
         self.cost_grad = 0
         self.optimizer = None
         # Generate hidden layers
-        self._layers = [layer_type(neurons_per_hidden, input_size)]
+        self._layers = [self._layer_type(neurons_per_hidden, input_size)]
         # Initialize weights
         if h_et_al:
             init_fact = np.sqrt(2/input_size)
         else:
             init_fact = 0.01
         for idx in range(num_hidden-1):
-            self._layers.append(layer_type(neurons_per_hidden, self._layers[idx].num_neurons, init_fact=init_fact))
+            self._layers.append(self._layer_type(neurons_per_hidden, self._layers[idx].num_neurons,
+                                                 init_fact=init_fact))
             if h_et_al:
                 init_fact = np.sqrt(2/self._layers[-1].num_neurons)
         self._layers.append(ly.LinearLayer(output_size, self._layers[-1].num_neurons))
@@ -77,6 +79,30 @@ class NeuralNetwork:
             self.optimizer = opt.AdamOptimizer(lr, beta1, beta2, self)
         else:
             raise ValueError("Optimizer not supported")
+
+    @staticmethod
+    def _set_activation(layer_type):
+        if layer_type == 'linear':
+            return ly.LinearLayer
+        elif layer_type == 'relu':
+            return ly.ReLuLayer
+        elif layer_type == 'tanh':
+            return ly.TanhLayer
+        elif layer_type == 'sigmoid':
+            return ly.SigmoidLayer
+        else:
+            ValueError("Activation function not supported")
+
+    @staticmethod
+    def _set_cost(cost):
+        if cost == 'mse':
+            return mod.mse
+        elif cost == 'svm':
+            return mod.svm
+        elif cost == 'ce':
+            return mod.ce
+        elif cost == 'expc':
+            return mod.expc
 
     def forward_pass(self, input_data):
         """Pass an input through the network"""
