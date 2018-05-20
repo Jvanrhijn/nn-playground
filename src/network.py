@@ -74,6 +74,8 @@ class NeuralNetwork:
             self.optimizer = opt.AdaDeltaOptimizer(gamma, self)
         elif optimizer == 'adam':
             self.optimizer = opt.AdamOptimizer(lr, beta1, beta2, self)
+        elif optimizer == 'nadam':
+            self.optimizer = opt.NadamOptimizer(lr, beta1, beta2, self)
         else:
             raise ValueError("Optimizer not supported")
 

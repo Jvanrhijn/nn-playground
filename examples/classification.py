@@ -39,7 +39,7 @@ for j in range(K):
 
 num_hidden = 2
 neurons_per_hidden = 50
-epochs = 1000
+epochs = 500
 
 learn_rate = 1e-4
 window = 0.9
@@ -53,10 +53,11 @@ network = net.NeuralNetwork(D, K, num_hidden, neurons_per_hidden,
 acc_before = test_accuracy(network, X, y)[0]
 
 costs = network.train(X, y, epochs,
-                      optimizer='adam',
+                      optimizer='nadam',
                       lr=learn_rate,
                       beta1=window,
                       beta2=window_sq,
+                      gamma=0.9,
                       quiet=False, save=True, reg=1e-5)
 
 acc_after = test_accuracy(network, X, y)[0]

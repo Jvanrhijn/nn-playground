@@ -31,7 +31,7 @@ def demo(func, network, optimizer, training_in, func_name,
                           gamma=gamma,
                           beta1=beta1,
                           beta2=beta2,
-                          quiet=quiet, save=True, reg=1e-6, nesterov=nesterov)
+                          quiet=quiet, save=True, reg=1e-8, nesterov=nesterov)
     print("Starting cost: {0}\n""Final cost: {1}\n".format(costs[0], costs[-1]))
 
     # Validate training set using points between training input points
@@ -61,7 +61,7 @@ window_size_adadelta = 0.999
 window_size_rmsprop = 0.9
 learn_rate_rmsprop = 1e-3
 
-learn_rate_adam = 1e-3
+learn_rate_adam = 1e-4
 window_grad_adam = 0.9
 window_sq_adam = 0.999
 
@@ -69,7 +69,7 @@ neurons_per_hidden = 50
 num_hidden = 2
 input_size = 1
 output_size = 1
-epochs = 100
+epochs = 500
 
 network_sgd = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden,
                                 activation='tanh', cost='mse', h_et_al=True)
@@ -78,6 +78,7 @@ network_adagrad = copy.deepcopy(network_sgd)
 network_adadelta = copy.deepcopy(network_sgd)
 network_rmsprop = copy.deepcopy(network_sgd)
 network_adam = copy.deepcopy(network_sgd)
+network_nadam = copy.deepcopy(network_sgd)
 
 func = lambda x: gaussian_function(1, 0, 0.25, x)
 
@@ -92,14 +93,17 @@ x_nag, y_nag, costs_nag = demo(func, network_nag, 'momentum', training_in, "gaus
 x_adagrad, y_adagrad, costs_adagrad = demo(func, network_adagrad, 'adagrad', training_in, "gaussian function - AdaGrad",
                                            plot_title="AdaGrad", quiet=True,
                                            lr=learn_rate_adagrad)
-x_adadelta, y_adadelta, costs_adadelta= demo(func, network_adadelta, 'adadelta', training_in, "gaussian function - AdaDelta",
-                                             plot_title="AdaDelta", quiet=True,
-                                             gamma=window_size_adadelta)
-x_rmsprop, y_rmsprop, costs_rmsprop = demo(func, network_rmsprop, 'rmsprop', training_in, "gaussian function - RMSProp",
-                                           plot_title="RMSProp", quiet=True,
-                                           lr=learn_rate_rmsprop, gamma=window_size_rmsprop)
+#x_adadelta, y_adadelta, costs_adadelta= demo(func, network_adadelta, 'adadelta', training_in, "gaussian function - AdaDelta",
+                                             #plot_title="AdaDelta", quiet=True,
+                                             #gamma=window_size_adadelta)
+#x_rmsprop, y_rmsprop, costs_rmsprop = demo(func, network_rmsprop, 'rmsprop', training_in, "gaussian function - RMSProp",
+                                           #plot_title="RMSProp", quiet=True,
+                                           #lr=learn_rate_rmsprop, gamma=window_size_rmsprop)
 x_adam, y_adam, costs_adam = demo(func, network_adam, 'adam', training_in, "gaussian function - Adam",
                                   plot_title="ADAM", quiet=True,
+                                  lr=learn_rate_adam, beta1=window_grad_adam, beta2=window_sq_adam)
+x_nadam, y_nadam, costs_nadam = demo(func, network_nadam, 'nadam', training_in, "gaussian function - Nadam",
+                                  plot_title="NADAM", quiet=True,
                                   lr=learn_rate_adam, beta1=window_grad_adam, beta2=window_sq_adam)
 
 fig = plt.figure()
@@ -110,17 +114,19 @@ ax = [ax_fit, ax_cost]
 ax[0].plot(x_sgd, y_sgd, label="SGD")
 ax[0].plot(x_nag, y_nag, label="NAG")
 ax[0].plot(x_adagrad, y_adagrad, label="AdaGrad")
-ax[0].plot(x_adadelta, y_adadelta, label="AdaDelta")
-ax[0].plot(x_rmsprop, y_rmsprop, label="RMSProp")
+#ax[0].plot(x_adadelta, y_adadelta, label="AdaDelta")
+#ax[0].plot(x_rmsprop, y_rmsprop, label="RMSProp")
 ax[0].plot(x_adam, y_adam, label="ADAM")
+ax[0].plot(x_nadam, y_nadam, label="NADAM")
 ax[0].plot(training_in, func(training_in), '.', label="Training points")
 
 ax[1].semilogy(costs_sgd, label="SGD")
 ax[1].semilogy(costs_nag, label="NAG")
 ax[1].semilogy(costs_adagrad, label="AdaGrad")
-ax[1].semilogy(costs_adadelta, label="AdaDelta")
-ax[1].semilogy(costs_rmsprop, label="RMSProp")
+#ax[1].semilogy(costs_adadelta, label="AdaDelta")
+#ax[1].semilogy(costs_rmsprop, label="RMSProp")
 ax[1].semilogy(costs_adam, label="ADAM")
+ax[1].semilogy(costs_nadam, label="NADAM")
 ax[1].set_xlabel("Epoch")
 ax[1].set_ylabel("Cost function")
 

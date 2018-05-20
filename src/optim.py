@@ -154,3 +154,25 @@ class AdamOptimizer(Optimizer):
     @staticmethod
     def _update_mov_av(current, grads, window):
         return window * current + (1 - window) * grads
+
+
+class NadamOptimizer(AdamOptimizer):
+
+    def __init__(self, learn_rate, window, window_sq, network, offset=10**-8):
+        super().__init__(learn_rate, window, window_sq, network, offset=offset)
+
+    def optimize(self):
+        self._time_step += 1
+        for idx, layer in enumerate(self._network.layers):
+            self._mov_av_grad_weight[idx] = self._update_mov_av(self._mov_av_grad_weight[idx], layer.weight_grad,
+                                                                self._window)
+            self._mov_av_grad_weight_sq[idx] = self._update_mov_av_sq(self._mov_av_grad_weight_sq[idx],
+                                                                      layer.weight_grad, self._window_sq)
+
+            mov_av_grad_weight_corr = self._mov_av_grad_weight[idx] / (1 - self._window**self._time_step)
+            mov_av_grad_weight_sq_corr = self._mov_av_grad_weight_sq[idx] / (1 - self._window_sq**self._time_step)
+            step = -self._learn_rate / (np.sqrt(mov_av_grad_weight_sq_corr) + self._offset) \
+                   * (self._window*mov_av_grad_weight_corr +
+                      (1 - self._window)*layer.weight_grad/(1 - self._window**self._time_step))
+            layer.weights += step
+
