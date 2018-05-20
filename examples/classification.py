@@ -36,7 +36,7 @@ def test_accuracy(network, test_data, separation_line=sin_sep):
 
 # Data set: set of (x, y) coordinates in [0, 1] X [0, 1]
 # Color point red, blue or green depending on its location
-data_size = 100
+data_size = 200
 train_data = np.random.random((data_size, 2))
 train_labels = np.array([0 if X[1] > tanh_sep(X[0]) else 1 if X[0] > 0.5 else 2
                          for X in train_data])
@@ -44,8 +44,8 @@ train_labels = np.array([0 if X[1] > tanh_sep(X[0]) else 1 if X[0] > 0.5 else 2
 # Set up the neural network
 input_size = 2
 output_size = 3
-num_hidden = 1
-neurons_per_hidden = 100
+num_hidden = 2
+neurons_per_hidden = 50
 epochs = 1024*15
 
 learn_rate = 1e-5
@@ -55,10 +55,10 @@ mom_par = 0.95
 window = 0.9
 window_sq = 0.999
 
-network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.ce)
+network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.ce, h_et_al=True)
 
 # Get pre-training accuracy
-test_size = 500
+test_size = 1000
 test_data = np.random.random((test_size, 2))
 acc_before = test_accuracy(network, test_data, separation_line=tanh_sep)[0]
 

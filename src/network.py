@@ -4,14 +4,21 @@ import src.layers as ly
 
 class NeuralNetwork:
     """Implements a fully connected neural network"""
-    def __init__(self, input_size, output_size, num_hidden, neurons_per_hidden, layer_type, cost):
+    def __init__(self, input_size, output_size, num_hidden, neurons_per_hidden, layer_type, cost, h_et_al=False):
         self._layer_type = layer_type
         self.cost = cost
         self.cost_grad = 0
         # Generate hidden layers
         self._layers = [layer_type(neurons_per_hidden, input_size)]
+        # Initialize weights
+        if h_et_al:
+            init_fact = np.sqrt(2/input_size)
+        else:
+            init_fact=0.01
         for idx in range(num_hidden-1):
-            self._layers.append(layer_type(neurons_per_hidden, self._layers[idx].num_neurons))
+            self._layers.append(layer_type(neurons_per_hidden, self._layers[idx].num_neurons, init_fact=init_fact))
+            if h_et_al:
+                init_fact = np.sqrt(2/self._layers[-1].num_neurons)
         self._layers.append(ly.LinearLayer(output_size, self._layers[-1].num_neurons))
 
     def train(self, train_data, train_output, num_epochs, optimizer, quiet=True, save=False, reg=0):

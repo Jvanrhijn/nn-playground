@@ -4,10 +4,10 @@ from src.util import sigmoid
 
 class Layer:
     """Layer of a fully connected neural network"""
-    def __init__(self, num_neurons, num_inputs):
+    def __init__(self, num_neurons, num_inputs, init_fact=0.01):
         self._num_neurons = num_neurons
-        self._weights = 0.01*np.random.randn(num_neurons, num_inputs)
-        self._biases = 0.01*np.random.randn(num_neurons)
+        self._weights = np.random.randn(num_neurons, num_inputs)*init_fact
+        self._biases = np.random.randn(num_neurons)*init_fact
         # Gradients of output with respect to input/weights/biases
         self._grad_inputs = 0
         self._grad_weights = 0
