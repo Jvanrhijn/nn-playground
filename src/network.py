@@ -1,5 +1,6 @@
 import numpy as np
 import src.layers as ly
+import src.optim as opt
 
 
 class NeuralNetwork:
@@ -8,6 +9,7 @@ class NeuralNetwork:
         self._layer_type = layer_type
         self.cost = cost
         self.cost_grad = 0
+        self.optimizer = None
         # Generate hidden layers
         self._layers = [layer_type(neurons_per_hidden, input_size)]
         # Initialize weights
@@ -21,8 +23,17 @@ class NeuralNetwork:
                 init_fact = np.sqrt(2/self._layers[-1].num_neurons)
         self._layers.append(ly.LinearLayer(output_size, self._layers[-1].num_neurons))
 
-    def train(self, train_data, train_output, num_epochs, optimizer, quiet=True, save=False, reg=0):
+    def train(self, train_data, train_output, num_epochs,
+              optimizer='sgd',
+              lr=1e-4,
+              mom=0.0,
+              gamma=0.9,
+              beta1=0.9,
+              beta2=0.999,
+              nesterov=False,
+              quiet=True, save=False, reg=0):
         """Train the neural network on the given training data set"""
+        self.set_optimizer(optimizer, lr=lr, mom=mom, gamma=gamma, beta1=beta1, beta2=beta2, nesterov=nesterov)
         if save:
             costs = np.zeros(num_epochs)
         for epoch in range(num_epochs):
@@ -38,7 +49,7 @@ class NeuralNetwork:
                 self.cost_grad = cost_grad
                 total_cost += cost
                 self.back_prop(cost_grad, reg=reg)  # Stochastic gradient descent or variants
-                optimizer.optimize(self)
+                self.optimizer.optimize(self)
             if save:
                 costs[epoch] = total_cost / train_data.shape[0]
             if not quiet:
@@ -47,6 +58,25 @@ class NeuralNetwork:
             return costs
         else:
             return None
+
+    def set_optimizer(self, optimizer='sgd', lr=1e-3, mom=0.5, gamma=0.9, beta1=0.9, beta2=0.999, nesterov=False):
+        if optimizer == 'sgd':
+            self.optimizer = opt.GDOptimizer(lr)
+        elif optimizer == 'momentum':
+            if nesterov:
+                self.optimizer = opt.NAGOptimizer(lr, mom, self)
+            else:
+                self.optimizer = opt.MomentumOptimizer(lr, mom, self)
+        elif optimizer == 'rmsprop':
+            self.optimizer = opt.RMSpropOptmizer(lr, gamma, self)
+        elif optimizer == 'adagrad':
+            self.optimizer = opt.AdaGradOptimizer(lr, self)
+        elif optimizer == 'adadelta':
+            self.optimizer = opt.AdaDeltaOptimizer(gamma, self)
+        elif optimizer == 'adam':
+            self.optimizer = opt.AdamOptimizer(lr, beta1, beta2, self)
+        else:
+            raise ValueError("Optimizer not supported")
 
     def forward_pass(self, input_data):
         """Pass an input through the network"""

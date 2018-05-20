@@ -8,7 +8,7 @@ class Layer:
         self._num_neurons = num_neurons
         self._weights = np.random.randn(num_neurons, num_inputs+1)*init_fact  # biases are last column
         # Gradients of output with respect to input/weights/biases
-        self._grad_inputs = 0
+        self._grad_inputs = np.zeros(num_neurons)
         self._grad_weights = np.zeros(self._weights.shape)
         # Gradients of weights and biases
         self._weight_grad = np.zeros(self._weights.shape)
@@ -20,7 +20,7 @@ class Layer:
 
     def back_propagate(self, gradient_in):
         """Propagate gradients backward through the layer and save weight/bias gradients
-        :param gradients_in: vector of gradients (dLoss/dy) heading into each neuron
+        :param gradient_in: vector of gradients (dLoss/dy) heading into each neuron
         :return grad_inputs: vector of gradients heading out of each neuron (dLoss/dx = dLoss/dy * dy/dx)"""
         grad_inputs = self._grad_inputs.T.dot(gradient_in)
         self._weight_grad[:, :-1] = gradient_in[:, np.newaxis] * self._grad_weights[:, :-1]

@@ -52,7 +52,8 @@ learn_rate = 1e-4
 window = 0.9
 window_sq = 0.999
 
-network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.ce, h_et_al=True)
+network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.ReLuLayer, mod.ce,
+                            h_et_al=True)
 
 # Get pre-training accuracy
 test_size = 1000
@@ -61,7 +62,11 @@ acc_before = test_accuracy(network, test_data, separation_line=tanh_sep)[0]
 
 optimizer = opt.AdamOptimizer(learn_rate, window, window_sq, network)
 
-costs = network.train(train_data, train_labels, epochs, optimizer, quiet=False, save=True, reg=0)
+costs = network.train(train_data, train_labels, epochs, optimizer='adam',
+                      lr=learn_rate,
+                      beta1=window,
+                      beta2=window_sq,
+                      quiet=False, save=True, reg=0)
 
 acc_after, results = test_accuracy(network, test_data, separation_line=tanh_sep)
 print("Accuracy before: {0}\nAccuracy after: {1}\n".format(acc_before, acc_after))
