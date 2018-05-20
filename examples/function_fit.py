@@ -52,20 +52,21 @@ def gaussian_function(a, b, c, x):
 
 
 """Linear function example"""
-num_hidden = 1
+num_hidden = 2
 neurons_per_hidden = 50
 input_size = 1
 output_size = 1
-learning_rate = 0.0001
-mom_par = 0.5
+learning_rate = 0.01
+window, window_sq = 0.9, 0.999
 
-epochs = 5000
+epochs = 2000
 
 training_in = np.linspace(-1, 1, 20)
 
-lin_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.LinearLayer, mod.mse)
+lin_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.LinearLayer, mod.mse,
+                                h_et_al=True)
 
-nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, lin_network)
+nag_optimizer = opt.AdamOptimizer(learning_rate, window, window_sq, lin_network)
 
 demo(lambda x: linear_function(-2, 2, x), lin_network, nag_optimizer, training_in, "linear function")
 
@@ -75,37 +76,39 @@ num_hidden = 2
 neurons_per_hidden = 20
 input_size = 1
 output_size = 1
-learning_rate = 0.05
-mom_par = 0.6
-
-epochs = 500
-
-training_in = np.linspace(-1, 1, 20)
-
-quad_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.SigmoidLayer, mod.mse)
-
-nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, quad_network)
-
-demo(lambda x: quadratic_function(1, 0, 0, x), quad_network, nag_optimizer, training_in, "quadratic function")
-
-
-"""Gaussian function example"""
-num_hidden = 1
-neurons_per_hidden = 10
-input_size = 1
-output_size = 1
 learning_rate = 0.01
 mom_par = 0.6
 
 epochs = 2000
 
-gauss_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse)
+training_in = np.linspace(-1, 1, 20)
 
-nag_optimizer = opt.NAGOptimizer(learning_rate, mom_par, gauss_network)
+quad_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.SigmoidLayer, mod.mse,
+                                 h_et_al=True)
+
+window, window_sq = 0.9, 0.999
+adam_optimizer = opt.AdamOptimizer(learning_rate, window, window_sq, quad_network)
+
+demo(lambda x: quadratic_function(1, 0, 0, x), quad_network, adam_optimizer, training_in, "quadratic function")
+
+
+"""Gaussian function example"""
+num_hidden = 2
+neurons_per_hidden = 20
+input_size = 1
+output_size = 1
+learning_rate = 0.01
+
+epochs = 2000
+
+gauss_network = net.NeuralNetwork(input_size, output_size, num_hidden, neurons_per_hidden, ly.TanhLayer, mod.mse,
+                                  h_et_al=True)
+
+adam_optimizer = opt.AdamOptimizer(learning_rate, window, window_sq, gauss_network)
 
 training_in = np.linspace(-1, 1, 20)
 
-demo(lambda x: gaussian_function(1, 0, .25, x), gauss_network, nag_optimizer, training_in, "gaussian function")
+demo(lambda x: gaussian_function(1, 0, .25, x), gauss_network, adam_optimizer, training_in, "gaussian function")
 
 
 """Sigmoid function example"""

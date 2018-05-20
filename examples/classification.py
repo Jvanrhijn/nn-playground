@@ -36,7 +36,7 @@ def test_accuracy(network, test_data, separation_line=sin_sep):
 
 # Data set: set of (x, y) coordinates in [0, 1] X [0, 1]
 # Color point red, blue or green depending on its location
-data_size = 200
+data_size = 100
 train_data = np.random.random((data_size, 2))
 train_labels = np.array([0 if X[1] > tanh_sep(X[0]) else 1 if X[0] > 0.5 else 2
                          for X in train_data])
@@ -46,12 +46,9 @@ input_size = 2
 output_size = 3
 num_hidden = 2
 neurons_per_hidden = 50
-epochs = 1024*15
+epochs = 5000
 
-learn_rate = 1e-5
-learn_rate_nag = 1e-5
-mom_par = 0.95
-
+learn_rate = 1e-4
 window = 0.9
 window_sq = 0.999
 
@@ -62,12 +59,7 @@ test_size = 1000
 test_data = np.random.random((test_size, 2))
 acc_before = test_accuracy(network, test_data, separation_line=tanh_sep)[0]
 
-#optimizer = opt.GDOptimizer(learn_rate)
-optimizer = opt.NAGOptimizer(learn_rate_nag, mom_par, network)
-#optimizer = opt.AdaGradOptimizer(learn_rate, network)
-#optimizer = opt.AdaDeltaOptimizer(window, network)
-#optimizer = opt.RMSpropOptmizer(learn_rate, window, network)
-#optimizer = opt.AdamOptimizer(learn_rate, window, window_sq, network)
+optimizer = opt.AdamOptimizer(learn_rate, window, window_sq, network)
 
 costs = network.train(train_data, train_labels, epochs, optimizer, quiet=False, save=True, reg=0)
 
