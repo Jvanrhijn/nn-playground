@@ -97,7 +97,7 @@ num_hidden = 2
 neurons_per_hidden = 20
 input_size = 1
 output_size = 1
-learning_rate = 0.01
+learning_rate = 0.001
 
 epochs = 2000
 

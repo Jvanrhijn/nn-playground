@@ -14,7 +14,7 @@ class NeuralNetwork:
         if h_et_al:
             init_fact = np.sqrt(2/input_size)
         else:
-            init_fact=0.01
+            init_fact = 0.01
         for idx in range(num_hidden-1):
             self._layers.append(layer_type(neurons_per_hidden, self._layers[idx].num_neurons, init_fact=init_fact))
             if h_et_al:
@@ -67,12 +67,10 @@ class NeuralNetwork:
 
     def back_prop(self, cost_grad, reg=0):
         weights_grads = []
-        bias_grads = []
         grad_in = cost_grad
         for layer in reversed(self._layers):
             grad_in = layer.back_propagate(grad_in)
             weights_grads.append(layer.weight_grad)
-            bias_grads.append(layer.biases_grad)
             if reg != 0:
                 layer.weights -= reg*layer.weights
 
