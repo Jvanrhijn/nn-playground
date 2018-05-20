@@ -130,13 +130,13 @@ class RMSpropOptmizer:
 
     def optimize(self, network):
         for idx, layer in enumerate(network.layers):
-            self._grad_weights_rms[idx] = self._update_mov_av(self._grad_weights_rms[idx], layer.weight_grad)
-            self._grad_biases_rms[idx] = self._update_mov_av(self._grad_biases_rms[idx], layer.biases_grad)
+            self._grad_weights_rms[idx] = self._update_mov_av(self._grad_weights_rms[idx], layer.weight_grad**2)
+            self._grad_biases_rms[idx] = self._update_mov_av(self._grad_biases_rms[idx], layer.biases_grad**2)
             layer.weights -= self._learn_rate / np.sqrt(self._grad_weights_rms[idx] + self._offset) * layer.weight_grad
             layer.biases -= self._learn_rate / np.sqrt(self._grad_biases_rms[idx] + self._offset) * layer.biases_grad
 
-    def _update_mov_av(self, rms, grads):
-        return self._window * rms + (1 - self._window) * grads**2
+    def _update_mov_av(self, mov_av, grads):
+        return self._window * mov_av + (1 - self._window) * grads
 
 
 class AdamOptimizer:

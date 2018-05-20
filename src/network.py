@@ -14,20 +14,23 @@ class NeuralNetwork:
             self._layers.append(layer_type(neurons_per_hidden, self._layers[idx].num_neurons))
         self._layers.append(ly.LinearLayer(output_size, self._layers[-1].num_neurons))
 
-    def train(self, train_data, train_output, num_epochs, optimizer, quiet=True, save=False):
+    def train(self, train_data, train_output, num_epochs, optimizer, quiet=True, save=False, reg=0):
         """Train the neural network on the given training data set"""
         if save:
             costs = np.zeros(num_epochs)
         for epoch in range(num_epochs):
             total_cost = 0
-            for idx in range(len(train_data)):
-                ex = np.random.randint(len(train_data))
-                example = train_data[ex] # stochastic GD
+            train_data, train_output = self.shuffle_train_data(train_data, train_output)
+            for idx, example in enumerate(train_data):
+                example = example # stochastic GD
                 output = self.forward_pass(example)
-                cost, cost_grad = self.cost(output, train_output[ex])
+                cost, cost_grad = self.cost(output, train_output[idx])
+                if reg != 0:
+                    for layer in self._layers:
+                        cost += 0.5*reg*np.sum(layer.weights**2)
                 self.cost_grad = cost_grad
                 total_cost += cost
-                self.back_prop(cost_grad)  # Stochastic gradient descent or variants
+                self.back_prop(cost_grad, reg=reg)  # Stochastic gradient descent or variants
                 optimizer.optimize(self)
             if save:
                 costs[epoch] = total_cost / train_data.shape[0]
@@ -35,6 +38,8 @@ class NeuralNetwork:
                 print("Epoch: {0} | Cost: {1}".format(epoch, total_cost/train_data.shape[0]))
         if save:
             return costs
+        else:
+            return None
 
     def forward_pass(self, input_data):
         """Pass an input through the network"""
@@ -53,7 +58,7 @@ class NeuralNetwork:
         for idx, layer in enumerate(self._layers):
             layer.biases = bias_list[idx]
 
-    def back_prop(self, cost_grad):
+    def back_prop(self, cost_grad, reg=0):
         weights_grads = []
         bias_grads = []
         grad_in = cost_grad
@@ -61,7 +66,15 @@ class NeuralNetwork:
             grad_in = layer.back_propagate(grad_in)
             weights_grads.append(layer.weight_grad)
             bias_grads.append(layer.biases_grad)
+            if reg != 0:
+                layer.weights -= reg*layer.weights
 
     @property
     def layers(self):
         return self._layers
+
+    @staticmethod
+    def shuffle_train_data(train_data, train_output):
+        assert len(train_data) == len(train_output)
+        permutation = np.random.permutation(len(train_data))
+        return train_data[permutation], train_output[permutation]

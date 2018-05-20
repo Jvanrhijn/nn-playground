@@ -1,4 +1,5 @@
 import numpy as np
+import src.util as util
 
 
 def mse(outputs, correct_outputs):
@@ -22,8 +23,10 @@ def expc(outputs, correct_outputs, param):
     return cost, cost_grad
 
 
-def ce(outputs, correct_label, offset=0):
-    sum = np.exp(outputs - max(outputs)).sum()
-    cost = -np.log(np.exp(outputs[correct_label] - max(outputs)) / sum)
-    cost_grad = np.exp(outputs - max(outputs)) / sum
-    return cost, cost_grad
+def ce(outputs, correct_label):
+    probs = util.softmax(outputs)
+    log_likelihood = -np.log(probs[correct_label])
+    loss = np.sum(log_likelihood)
+    grad = probs
+    grad[correct_label] -= 1
+    return loss, grad
