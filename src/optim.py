@@ -3,50 +3,62 @@ import numpy as np
 import src.layers as ly
 
 
-class GDOptimizer:
+class Optimizer:
+    def __init__(self, network):
+        self._network = network
 
-    def __init__(self, learn_rate):
+    def optimize(self):
+        pass
+
+
+class GDOptimizer(Optimizer):
+
+    def __init__(self, learn_rate, network):
+        super().__init__(network)
         self._learn_rate = learn_rate
 
-    def optimize(self, network):
-        for layer in network.layers:
+    def optimize(self):
+        for layer in self._network.layers:
             layer.weights -= layer.weight_grad * self._learn_rate
 
 
-class MomentumOptimizer:
+class MomentumOptimizer(Optimizer):
 
     def __init__(self, learn_rate, mom_par, network):
+        super().__init__(network)
         self._learn_rate = learn_rate
         self._momentum = []
         self._mom_par = mom_par
-        for layer in network.layers:
+        for layer in self._network.layers:
             self._momentum.append(np.zeros(layer.weight_grad.shape))
 
-    def optimize(self, network):
-        for idx, layer in enumerate(network.layers):
+    def optimize(self):
+        for idx, layer in enumerate(self._network.layers):
             self._momentum[idx] = self._mom_par*self._momentum[idx] - self._learn_rate*layer.weight_grad
             layer.weights += self._momentum[idx]
 
 
-class NAGOptimizer:
+class NAGOptimizer(Optimizer):
 
     def __init__(self, learn_rate, mom_par, network):
+        super().__init__(network)
         self._mom_par = mom_par
         self._learn_rate = learn_rate
         self._momentum = []
-        for layer in network.layers:
+        for layer in self._network.layers:
             self._momentum.append(np.zeros(layer.weight_grad.shape))
 
-    def optimize(self, network):
-        for idx, layer in enumerate(network.layers):
+    def optimize(self):
+        for idx, layer in enumerate(self._network.layers):
             momentum_prev = self._momentum[idx]
             self._momentum[idx] = self._mom_par*self._momentum[idx] + self._learn_rate * layer.weight_grad
             layer.weights -= self._mom_par * momentum_prev + (1 + self._mom_par) * self._momentum[idx]
 
 
-class AdaGradOptimizer:
+class AdaGradOptimizer(Optimizer):
 
     def __init__(self, learn_rate, network, offset=10**-8):
+        super().__init__(network)
         self._learn_rate = learn_rate
         self._offset = offset
         self._grad_square_sum = []
@@ -54,13 +66,13 @@ class AdaGradOptimizer:
         for layer in network.layers:
             self._grad_square_sum.append(np.zeros(layer.weights.shape))
 
-    def optimize(self, network):
-        for idx, layer in enumerate(network.layers):
+    def optimize(self):
+        for idx, layer in enumerate(self._network.layers):
             self._grad_square_sum[idx] += layer.weight_grad**2
             layer.weights -= self._learn_rate / np.sqrt(self._grad_square_sum[idx] + self._offset) * layer.weight_grad
 
 
-class AdaDeltaOptimizer:
+class AdaDeltaOptimizer(Optimizer):
 
     def __init__(self, window, network, offset=10**-8):
         self._window = window
@@ -70,8 +82,8 @@ class AdaDeltaOptimizer:
         self._weight_step_mov_av = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
         self._weight_step_prev = [np.zeros(layer.weights.shape) for layer in network.layers]
 
-    def optimize(self, network):
-        for idx, layer in enumerate(network.layers):
+    def optimize(self):
+        for idx, layer in enumerate(self._network.layers):
             self._grad_weights_mov_av[idx] = self._update_mov_av(self._grad_weights_mov_av[idx], layer.weight_grad)
             grad_weights_rms = self._compute_rms(self._grad_weights_mov_av[idx])
             self._weight_step_mov_av[idx] = self._update_mov_av(self._weight_step_mov_av[idx],
@@ -91,17 +103,18 @@ class AdaDeltaOptimizer:
         return -step_rms / grad_rms * grad
 
 
-class RMSpropOptmizer:
+class RMSpropOptmizer(Optimizer):
 
     def __init__(self, learn_rate, window, network, offset=10**-8):
+        super().__init__(network)
         self._learn_rate = learn_rate
         self._window = window
         self._offset = offset
         self._network = network
         self._grad_weights_rms = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
 
-    def optimize(self, network):
-        for idx, layer in enumerate(network.layers):
+    def optimize(self):
+        for idx, layer in enumerate(self._network.layers):
             self._grad_weights_rms[idx] = self._update_mov_av(self._grad_weights_rms[idx], layer.weight_grad**2)
             layer.weights -= self._learn_rate / np.sqrt(self._grad_weights_rms[idx] + self._offset) * layer.weight_grad
 
@@ -109,9 +122,10 @@ class RMSpropOptmizer:
         return self._window * mov_av + (1 - self._window) * grads
 
 
-class AdamOptimizer:
+class AdamOptimizer(Optimizer):
 
     def __init__(self, learn_rate, window, window_sq, network, offset=10**-8):
+        super().__init__(network)
         self._time_step = 0
         self._learn_rate = learn_rate
         self._window = window
@@ -121,9 +135,9 @@ class AdamOptimizer:
         self._mov_av_grad_weight = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
         self._mov_av_grad_weight_sq = [np.zeros(layer.weight_grad.shape) for layer in network.layers]
 
-    def optimize(self, network):
+    def optimize(self):
         self._time_step += 1
-        for idx, layer in enumerate(network.layers):
+        for idx, layer in enumerate(self._network.layers):
             self._mov_av_grad_weight[idx] = self._update_mov_av(self._mov_av_grad_weight[idx], layer.weight_grad,
                                                                 self._window)
             self._mov_av_grad_weight_sq[idx] = self._update_mov_av_sq(self._mov_av_grad_weight_sq[idx],

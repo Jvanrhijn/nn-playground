@@ -45,25 +45,22 @@ class NeuralNetwork:
                 example = example # stochastic GD
                 output = self.forward_pass(example)
                 cost, cost_grad = self.cost(output, train_output[idx])
-                if reg != 0:
-                    for layer in self._layers:
-                        cost += 0.5*reg*np.sum(layer.weights**2)
+                for layer in self._layers:  # Apply regularization loss
+                    cost += 0.5*reg*np.sum(layer.weights**2)
                 self.cost_grad = cost_grad
                 total_cost += cost
                 self.back_prop(cost_grad, reg=reg)  # Stochastic gradient descent or variants
-                self.optimizer.optimize(self)
+                self.optimizer.optimize()
             if save:
                 costs[epoch] = total_cost / train_data.shape[0]
             if not quiet:
                 print("Epoch: {0} | Cost: {1}".format(epoch, total_cost/train_data.shape[0]))
         if save:
             return costs
-        else:
-            return None
 
     def set_optimizer(self, optimizer='sgd', lr=1e-3, mom=0.5, gamma=0.9, beta1=0.9, beta2=0.999, nesterov=False):
         if optimizer == 'sgd':
-            self.optimizer = opt.GDOptimizer(lr)
+            self.optimizer = opt.GDOptimizer(lr, self)
         elif optimizer == 'momentum':
             if nesterov:
                 self.optimizer = opt.NAGOptimizer(lr, mom, self)
@@ -113,6 +110,9 @@ class NeuralNetwork:
     def save_weights(self):
         pass
 
+    def read_weights(self, path):
+        pass
+
     def set_weights(self, weights_list):
         for idx, layer in enumerate(self._layers):
             layer.weights = weights_list[idx]
@@ -121,14 +121,13 @@ class NeuralNetwork:
         for idx, layer in enumerate(self._layers):
             layer.biases = bias_list[idx]
 
-    def back_prop(self, cost_grad, reg=0):
+    def back_prop(self, cost_grad, reg=0.0):
         weights_grads = []
         grad_in = cost_grad
         for layer in reversed(self._layers):
             grad_in = layer.back_propagate(grad_in)
             weights_grads.append(layer.weight_grad)
-            if reg != 0:
-                layer.weights -= reg*layer.weights
+            layer.weights -= reg*layer.weights
 
     @property
     def layers(self):
