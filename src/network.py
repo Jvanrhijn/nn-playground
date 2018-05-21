@@ -35,7 +35,7 @@ class NeuralNetwork:
               nesterov=False,
               quiet=True, save=False, reg=0):
         """Train the neural network on the given training data set"""
-        self.set_optimizer(optimizer, lr=lr, mom=mom, gamma=gamma, beta1=beta1, beta2=beta2, nesterov=nesterov)
+        self._set_optimizer(optimizer, lr=lr, mom=mom, gamma=gamma, beta1=beta1, beta2=beta2, nesterov=nesterov)
         if save:
             costs = np.zeros(num_epochs)
         for epoch in range(num_epochs):
@@ -53,12 +53,32 @@ class NeuralNetwork:
                 self.optimizer.optimize()
             if save:
                 costs[epoch] = total_cost / train_data.shape[0]
-            if not quiet:
+            if not quiet and (epoch % 10 == 0):
                 print("Epoch: {0} | Cost: {1}".format(epoch, total_cost/train_data.shape[0]))
         if save:
             return costs
 
-    def set_optimizer(self, optimizer='sgd', lr=1e-3, mom=0.5, gamma=0.9, beta1=0.9, beta2=0.999, nesterov=False):
+    def validate(self, validation_data, validation_labels):
+        """Validate a clasification network, returns accuracy on the validation set"""
+        assert validation_data.shape[0] == validation_labels.shape[0]
+        correct = 0
+        for example, label in zip(validation_data, validation_labels):
+            result = self.forward_pass(example).argmax()
+            if result == label:
+                correct += 1
+        return correct / validation_data.shape[0]
+
+    def _set_optimizer(self, optimizer='sgd', lr=1e-3, mom=0.5, gamma=0.9, beta1=0.9, beta2=0.999, nesterov=False):
+        """Set the neural network's optimizer
+        Supported opimizers are:
+        - Stochastic gradient descent
+        - Momentum GD with Nesterov's accelerated method (optional)
+        - RMSProp
+        - AdaGrad
+        - AdaDelta
+        - Adam
+        - Nadam
+        """
         if optimizer == 'sgd':
             self.optimizer = opt.GDOptimizer(lr, self)
         elif optimizer == 'momentum':
@@ -81,6 +101,12 @@ class NeuralNetwork:
 
     @staticmethod
     def _set_activation(layer_type):
+        """Set the activation function of the hidden layer
+        Currently supported:
+        - linear
+        - ReLU
+        - Tanh
+        - Sigmoid"""
         if layer_type == 'linear':
             return ly.LinearLayer
         elif layer_type == 'relu':
@@ -94,6 +120,11 @@ class NeuralNetwork:
 
     @staticmethod
     def _set_cost(cost):
+        """Set the cost function to be used for training
+        - mean square error
+        - state vector machine
+        - cross-entropy
+        - exponential cost"""
         if cost == 'mse':
             return mod.mse
         elif cost == 'svm':
@@ -109,21 +140,22 @@ class NeuralNetwork:
             input_data = layer.forward_pass(input_data)
         return input_data
 
-    def save_weights(self):
+    def save_weights(self, path):
+        """Save weights in a file"""
         pass
 
     def read_weights(self, path):
         pass
 
     def set_weights(self, weights_list):
+        """Set the weights from a list of weights"""
+        assert len(weights_list) == len(self._layers)
         for idx, layer in enumerate(self._layers):
             layer.weights = weights_list[idx]
 
-    def set_biases(self, bias_list):
-        for idx, layer in enumerate(self._layers):
-            layer.biases = bias_list[idx]
-
     def back_prop(self, cost_grad, reg=0.0):
+        """Back propagate the gradient of the cost function w.r.t the outputs through the network, to obtain
+        the gradient of the loss w.r.t. the weights"""
         weights_grads = []
         grad_in = cost_grad
         for layer in reversed(self._layers):

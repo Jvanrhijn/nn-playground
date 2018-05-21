@@ -3,12 +3,14 @@ import src.util as util
 
 
 def mse(outputs, correct_outputs):
+    """Mean square error cost function"""
     cost = 0.25*((outputs - correct_outputs)**2).sum()
     cost_grad = 0.5*(outputs - correct_outputs)
     return cost, cost_grad
 
 
 def svm(outputs, correct_label):
+    """State vector machine cost function"""
     terms = np.maximum(outputs - outputs[correct_label] + 1, 0)
     terms[correct_label] = 0
     cost = terms.sum()
@@ -18,12 +20,14 @@ def svm(outputs, correct_label):
 
 
 def expc(outputs, correct_outputs, param):
+    """Exponential cost function"""
     cost = param * np.exp(1/param*((outputs - correct_outputs)**2).sum())
     cost_grad = 2/param * (outputs - correct_outputs) * cost
     return cost, cost_grad
 
 
 def ce(outputs, correct_label):
+    """Cross-entropy cost function"""
     probs = util.softmax(outputs)
     log_likelihood = -np.log(probs[correct_label])
     loss = np.sum(log_likelihood)
