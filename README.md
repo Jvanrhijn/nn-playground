@@ -7,14 +7,14 @@ Neural network implemented in Python + NumPy, mostly to teach myself about how t
 Import src.network, src.models, src.layers and src.optim. Create your `training_data` and `training_answers`. Choose which algorithm and which type of activation function to use, then create the network:
 
 ~~~python
-network = src.network.NeuralNet(input_size, output_size, num_hidden, neurons_per_hidden, layer.TanhLayer, models.mse)
+network = src.network.NeuralNet(input_size, output_size, num_hidden, neurons_per_hidden, activation='relu', cost='ce')
 ~~~
 
 Now, train your network on the input data:
 
 ~~~python
-costs = network.train(training_data, training_answers, epochs, nag_optim, quiet=False, save=True,
-                      optimizer='momentum', lr=1e-3, mom=0.9)
+costs = network.train(training_data, training_answers, epochs, optimizer='momentum', quiet=False, save=True,
+                      optimizer='momentum', lr=1e-3, mom=0.9, nesterov=True)
 ~~~
 
 The network will now use stochastic gradient descent with Nesterov's algorithm. If you set `quiet=False`, the trainer will print the cost function for the whole data set after each training epoch. The `save` kwarg saves the cost function for each epoch. Finally, run the network on any other data point:
