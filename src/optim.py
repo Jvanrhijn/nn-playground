@@ -75,6 +75,7 @@ class AdaGradOptimizer(Optimizer):
 class AdaDeltaOptimizer(Optimizer):
 
     def __init__(self, window, network, offset=10**-8):
+        super().__init__(network)
         self._window = window
         self._network = network
         self._offset = offset

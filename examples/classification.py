@@ -27,7 +27,7 @@ for j in range(K):
 
 num_hidden = 2
 neurons_per_hidden = 50
-epochs = 500
+epochs = 300
 
 learn_rate = 1e-4
 window = 0.9
