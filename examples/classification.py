@@ -7,10 +7,8 @@ import src.models as mod
 
 np.random.seed(0)
 
-
-def sep(x):
-    return 0.5*(1 + np.tanh(3*x-1))
-
+test_size = 10000
+test_data = np.random.random((test_size, 2))*2 - 1
 
 # CS231n spiral dataset
 N = 100  # number of points per class
@@ -27,9 +25,9 @@ for j in range(K):
 
 num_hidden = 2
 neurons_per_hidden = 50
-epochs = 300
+epochs = 100
 
-learn_rate = 1e-4
+learn_rate = 1e-3
 window = 0.9
 window_sq = 0.999
 
@@ -46,7 +44,7 @@ costs = network.train(X, y, epochs,
                       beta1=window,
                       beta2=window_sq,
                       gamma=0.9,
-                      quiet=False, save=True, reg=1e-5)
+                      quiet=False, save=True, reg=1e-4)
 
 acc_after = network.validate(X, y)
 print("Accuracy before: {0}\nAccuracy after: {1}\n".format(acc_before, acc_after))
@@ -59,8 +57,6 @@ ax_cost.semilogy(costs)
 ax_cost.set_ylabel("Cost function")
 ax_cost.set_xlabel("Epoch")
 
-test_size = 1000
-test_data = np.random.random((test_size, 2))*2 - 1
 results = np.zeros(test_data.shape[0])
 colors = {
     0: 'red',
