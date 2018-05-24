@@ -65,7 +65,8 @@ colors = {
 }
 for idx, point in enumerate(test_data):
     results[idx] = np.argmax(network.forward_pass(point))
-ax_data.scatter(test_data[:, 0], test_data[:, 1], s=40, c=results, cmap=plt.cm.Spectral)
+ax_data.scatter(test_data[:, 0], test_data[:, 1], s=50, c=results, cmap=plt.cm.Paired, alpha=0.1)
+ax_data.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Paired)
 ax_cost.grid()
 
 plt.show()

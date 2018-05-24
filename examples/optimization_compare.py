@@ -61,7 +61,7 @@ costs_rmsprop = train(network_rmsprop, "rmsprop", lr=2*1e-3)
 costs_adam = train(network_adam, "adam", lr=2*1e-3)
 costs_nadam = train(network_nadam, "nadam", lr=2*1e-3)
 
-fig, ax = plt.subplots(1)
+fig, ax = plt.subplots(1, figsize=(10, 5))
 ax.semilogy(costs_sgd, label='SGD')
 ax.semilogy(costs_nag, label="NAG")
 ax.semilogy(costs_rmsprop, label="RMSProp")

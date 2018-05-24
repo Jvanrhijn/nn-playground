@@ -117,7 +117,7 @@ class RMSpropOptmizer(Optimizer):
     def optimize(self):
         for idx, layer in enumerate(self._network.layers):
             self._grad_weights_rms[idx] = self._update_mov_av(self._grad_weights_rms[idx], layer.weight_grad**2)
-            layer.weights -= self._learn_rate / np.sqrt(self._grad_weights_rms[idx] + self._offset) * layer.weight_grad
+            layer.weights -= self._learn_rate / (np.sqrt(self._grad_weights_rms[idx]) + self._offset) * layer.weight_grad
 
     def _update_mov_av(self, mov_av, grads):
         return self._window * mov_av + (1 - self._window) * grads
