@@ -7,9 +7,6 @@ import src.models as mod
 
 np.random.seed(0)
 
-test_size = 10000
-test_data = np.random.random((test_size, 2))*2 - 1
-
 # CS231n spiral dataset
 N = 100  # number of points per class
 D = 2  # dimensionality
@@ -25,7 +22,7 @@ for j in range(K):
 
 num_hidden = 2
 neurons_per_hidden = 50
-epochs = 100
+epochs = 150
 
 learn_rate = 1e-3
 window = 0.9
@@ -57,16 +54,19 @@ ax_cost.semilogy(costs)
 ax_cost.set_ylabel("Cost function")
 ax_cost.set_xlabel("Epoch")
 
-results = np.zeros(test_data.shape[0])
-colors = {
-    0: 'red',
-    1: 'blue',
-    2: 'green'
-}
-for idx, point in enumerate(test_data):
-    results[idx] = np.argmax(network.forward_pass(point))
-ax_data.scatter(test_data[:, 0], test_data[:, 1], s=50, c=results, cmap=plt.cm.Paired, alpha=0.1)
-ax_data.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Paired)
+h = .02  # step size in the mesh
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                     np.arange(y_min, y_max, h))
+points = np.c_[xx.ravel(), yy.ravel()]
+results = []
+for idx, point in enumerate(points):
+    results.append(np.argmax(network.forward_pass(point)))
+results = np.array(results).reshape(xx.shape)
+
+ax_data.contourf(xx, yy, results, cmap=plt.cm.Spectral, alpha=0.8)
+ax_data.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
 ax_cost.grid()
 
 plt.show()
