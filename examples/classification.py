@@ -69,4 +69,3 @@ ax_data.scatter(test_data[:, 0], test_data[:, 1], s=40, c=results, cmap=plt.cm.S
 ax_cost.grid()
 
 plt.show()
-
