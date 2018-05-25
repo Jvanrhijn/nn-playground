@@ -25,13 +25,13 @@ result = network.forward_pass(some_input)
 
 **Examples**
 
-Some examples are included which show how to use the API. One example demonstrates the network's ability to perform certain tasks (at the moment, approximating a single-valued function on a given interval). The other shows the difference in performance when using different convex optimization algorithms (currently only stochastic gradient descent and Nesterov's accelerated gradient descent). The below figures show the network's attempt at fitting a Gaussian function of standard deviation 0.25 and zero mean, usig stochastic GD and Nesterov GD. The cost function is a mean square error cost.
+Some examples are included which show how to use the API. Below example demonstrates the convergence of several included optimization algorithms (hyperparameters tuned manually).
 
-[![optimization demo](https://imgur.com/fkei4pO.png)](https://imgur.com/fkei4pO.png)
+[![optimization demo](https://i.imgur.com/rKsksFW.png)](https://i.imgur.com/rKsksFW.png)
 
-The below example shows the network's classification capabilities. It was given 200 randomly generated points, each assigned a color - red if it lies above a given line, blue if below and to the right of the vertical line, and green otherwise. The figure below shows the result of running the network on a set of 1000 randomly generated points of validation data. This network consisted of a two hidden layers with 50 ReLu activated neurons, and was optimized with Nesterov's algorithm for a cross-entropy cost function. The resulting accuracy on the validation set was 97.4%, versus 36.7% before training.
+The below example shows the network's classification capabilities, after being trained on CS231n's spiral dataset. This network consisted of a two hidden layers with 50 ReLu activated neurons, and was optimized with Nadam for a cross-entropy cost function with L2 regularization. The shaded regions indicate the decision boundaries.
 
-[![classification demo](https://imgur.com/Z7XX1QG.png)](https://imgur.com/Z7XX1QG.png)
+[![classification demo](https://i.imgur.com/FH0oLIF.png)](https://i.imgur.com/FH0oLIF.png)
 
 **Dependencies**
 

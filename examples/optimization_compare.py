@@ -57,7 +57,7 @@ network_nadam = copy.deepcopy(network)
 
 costs_sgd = train(network, "sgd", lr=1e-2)
 costs_nag = train(network_nag, "momentum", nesterov=True, lr=1e-3, mom=0.8)
-costs_rmsprop = train(network_rmsprop, "rmsprop", lr=2*1e-3)
+costs_rmsprop = train(network_rmsprop, "rmsprop", lr=2*1e-3, gamma=0.99)
 costs_adam = train(network_adam, "adam", lr=2*1e-3)
 costs_nadam = train(network_nadam, "nadam", lr=2*1e-3)
 
